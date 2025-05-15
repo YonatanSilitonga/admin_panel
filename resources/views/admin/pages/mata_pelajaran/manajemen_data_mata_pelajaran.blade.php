@@ -13,55 +13,64 @@
 
                 <div class="data">
                     <div class="mb-4 text-end">
-                        <a href="{{ route('mata-pelajaran.create') }}" class="btn btn-success">
-                            <i class="bi bi-plus-circle me-1"></i>Tambah
-                        </a>
+                    
                     </div>
 
-                    <div class="table-responsive">
-                        <table id="mataPelajaranTable" class="table table-striped table-bordered table-sm">
-                            <thead class="bg-success text-white">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama</th>
-                                    <th>Kode</th>
-                                    <th>Deskripsi</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($mataPelajaran as $index => $mapel)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $mapel->nama }}</td>
-                                        <td>{{ $mapel->kode }}</td>
-                                        <td>{{ $mapel->deskripsi ?? '-' }}</td>
-                                        <td class="text-center">
-                                            <div class="d-flex justify-content-center gap-4">
-                                                <a href="javascript:void(0);" class="text-primary btn-view-mapel"
-                                                    data-id="{{ $mapel->id_mata_pelajaran }}"
-                                                    data-nama="{{ $mapel->nama }}" data-kode="{{ $mapel->kode }}"
-                                                    data-deskripsi="{{ $mapel->deskripsi ?? '-' }}"
-                                                    data-bs-toggle="modal" data-bs-target="#modalViewMapel"
-                                                    title="Lihat">
-                                                    <i class="bi bi-eye-fill fs-5"></i>
-                                                </a>
-                                                <a href="{{ route('mata-pelajaran.edit', $mapel->id_mata_pelajaran) }}"
-                                                    class="text-warning" data-bs-toggle="tooltip"
-                                                    data-bs-placement="top" title="Edit">
-                                                    <i class="bi bi-pencil-square fs-5"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
+<!-- Header + Tombol Tambah -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Daftar Mata Pelajaran</h5>
+    <a href="{{ route('mata-pelajaran.create') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle me-1"></i> Tambah
+    </a>
+</div>
+
+<div class="table-responsive">
+    @if($mataPelajaran->isEmpty())
+        <div class="alert alert-info mb-0">
+            <i class="bi bi-info-circle me-2"></i> Tidak ada data mata pelajaran.
+        </div>
+    @else
+        <table id="mataPelajaranTable" class="table table-striped table-bordered table-sm w-100 align-middle">
+            <thead class="bg-success text-white">
+                <tr>
+                    <th width="5%" class="text-center">No</th>
+                    <th width="25%">Nama</th>
+                    <th width="20%">Kode</th>
+                    <th width="35%">Deskripsi</th>
+                    <th width="15%" class="text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($mataPelajaran as $index => $mapel)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>{{ $mapel->nama }}</td>
+                        <td>{{ $mapel->kode }}</td>
+                        <td>{{ $mapel->deskripsi ?? '-' }}</td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="javascript:void(0);" class="text-primary btn-view-mapel"
+                                   data-id="{{ $mapel->id_mata_pelajaran }}"
+                                   data-nama="{{ $mapel->nama }}"
+                                   data-kode="{{ $mapel->kode }}"
+                                   data-deskripsi="{{ $mapel->deskripsi ?? '-' }}"
+                                   data-bs-toggle="modal" data-bs-target="#modalViewMapel"
+                                   title="Lihat">
+                                    <i class="bi bi-eye-fill fs-5"></i>
+                                </a>
+                                <a href="{{ route('mata-pelajaran.edit', $mapel->id_mata_pelajaran) }}"
+                                   class="text-warning" title="Edit">
+                                    <i class="bi bi-pencil-square fs-5"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+</div>
+
 
     <!-- Modal Detail Mata Pelajaran -->
     <div class="modal fade" id="modalViewMapel" tabindex="-1" aria-labelledby="modalViewMapelLabel" aria-hidden="true">

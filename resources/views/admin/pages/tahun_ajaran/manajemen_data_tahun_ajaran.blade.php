@@ -36,64 +36,62 @@
                 </div>
 
                 <!-- Tabel Tahun Ajaran -->
-                <div class="table-responsive">
-                    <table id="taTable" table class="table table-striped table-bordered table-sm">
-                        <thead class="bg-success text-white">
-                            <tr>
-                                <th width="5%">No</th>
-                                <th wdith="15">Nama Tahun Ajaran</th>
-                                <th width="10%">Tanggal Mulai</th>
-                                <th width="10%">Tanggal Selesai</th>
-                                <th width="10%">Status</th>
-                                <th width="10%">Jumlah Kelas</th>
-                                <th width="10%">Jumlah Siswa</th>
-                                <th width="10%" class="text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($tahunAjaran as $index => $ta)
-                                <tr class="{{ $ta->aktif ? 'table-success' : '' }}">
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $ta->nama_tahun_ajaran }}</td>
-                                    <td>{{ $ta->tanggal_mulai->format('d-m-Y') }}</td>
-                                    <td>{{ $ta->tanggal_selesai->format('d-m-Y') }}</td>
-                                    <td>
-                                        @if($ta->aktif)
-                                            <span class="badge bg-success">Aktif</span>
-                                        @else
-                                            <span class="badge bg-secondary">Non-Aktif</span>
-                                        @endif
-                                    </td>
-                                    <td><span class="badge bg-info">{{ $ta->kelas_count }}</span></td>
-                                    <td><span class="badge bg-info">{{ $ta->siswa_count }}</span></td>
-                                    <td class="text-center">
-                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
-                                            <a href="{{ route('tahun-ajaran.edit', $ta->id_tahun_ajaran) }}"
-                                                class="text-warning" title="Edit">
-                                                <i class="bi bi-pencil-square fs-5"></i>
-                                            </a>
-                                            @if(!$ta->aktif)
-                                                <a href="{{ route('tahun-ajaran.set-active', $ta->id_tahun_ajaran) }}"
-                                                    class="text-success btn-activate" data-id="{{ $ta->id_tahun_ajaran }}"
-                                                    data-name="{{ $ta->nama_tahun_ajaran }}" title="Aktifkan">
-                                                    <i class="bi bi-check-circle-fill fs-5"></i>
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="text-center py-3">Tidak ada data tahun ajaran.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </main>
+<div class="table-responsive">
+    <table id="taTable" class="table table-striped table-bordered table-sm w-100 align-middle">
+        <thead class="bg-success text-white">
+            <tr>
+                <th width="5%" class="text-center">No</th>
+                <th width="20%">Nama Tahun Ajaran</th>
+                <th width="15%">Tanggal Mulai</th>
+                <th width="15%">Tanggal Selesai</th>
+                <th width="10%">Status</th>
+                <th width="10%">Jumlah Kelas</th>
+                <th width="10%">Jumlah Siswa</th>
+                <th width="15%" class="text-center">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($tahunAjaran as $index => $ta)
+                <tr class="{{ $ta->aktif ? 'table-success' : '' }}">
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td>{{ $ta->nama_tahun_ajaran }}</td>
+                    <td>{{ $ta->tanggal_mulai->format('d-m-Y') }}</td>
+                    <td>{{ $ta->tanggal_selesai->format('d-m-Y') }}</td>
+                    <td>
+                        @if($ta->aktif)
+                            <span class="badge bg-success">Aktif</span>
+                        @else
+                            <span class="badge bg-secondary">Non-Aktif</span>
+                        @endif
+                    </td>
+                    <td><span class="badge bg-info">{{ $ta->kelas_count }}</span></td>
+                    <td><span class="badge bg-info">{{ $ta->siswa_count }}</span></td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                            <a href="{{ route('tahun-ajaran.edit', $ta->id_tahun_ajaran) }}"
+                               class="text-warning" title="Edit">
+                                <i class="bi bi-pencil-square fs-5"></i>
+                            </a>
+                            @if(!$ta->aktif)
+                                <a href="{{ route('tahun-ajaran.set-active', $ta->id_tahun_ajaran) }}"
+                                   class="text-success btn-activate"
+                                   data-id="{{ $ta->id_tahun_ajaran }}"
+                                   data-name="{{ $ta->nama_tahun_ajaran }}" title="Aktifkan">
+                                    <i class="bi bi-check-circle-fill fs-5"></i>
+                                </a>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="8" class="text-center py-3">Tidak ada data tahun ajaran.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 </div>
+
 @endsection
 
 @section('js')
