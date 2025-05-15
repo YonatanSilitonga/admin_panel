@@ -40,6 +40,6 @@ class SuratIzin extends Model
 
     public function orangtua()
     {
-        return $this->belongsTo(Orangtua::class, 'id_orangtua', 'id_orangtua');
+        return $this->belongsTo(OrangTua::class, 'id_orangtua', 'id_orangtua');
     }
 }

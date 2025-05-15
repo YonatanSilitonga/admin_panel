@@ -49,7 +49,7 @@ class User extends Authenticatable
 
     public function orangtua()
     {
-        return $this->hasOne(Orangtua::class, 'id_user', 'id_user');
+        return $this->hasOne(OrangTua::class, 'id_user', 'id_user');
     }
 
     public function staf()
