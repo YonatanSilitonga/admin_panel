@@ -71,11 +71,11 @@
 <!-- Tabel Data Orang Tua -->
 <h5 class="mb-3">Daftar Orang Tua / Wali Murid</h5>
 <div class="table-responsive">
-    <table id="ortuTable" class="table table-striped table-bordered table-sm" >
+    <table id="orangtuaTable" class="table table-striped table-bordered table-sm" >
         <thead class="bg-success text-white">
             <tr>
                 <th class="text-center" style="min-width: 40px;">No</th>
-                <th style="min-width: 150px;">Nama Orang Tua</th>
+                <th style="min-width: 150px;">Nama Orang Tua / Wali</th>
                 <th style="min-width: 180px;">Nama Anak</th>
                 <th style="min-width: 130px;">Nomor Telepon</th>
                 <th class="text-center" style="min-width: 100px;">Status</th>
