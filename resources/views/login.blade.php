@@ -14,7 +14,7 @@
         <div class="login-card">
             <div class="login-header">
                 <img class="logo-image" src="{{ asset('images/HadirIn.jpg') }}" alt="HadirIn Logo">
-                <h2 class="tagline">Click to Know Once</h2>
+                <h2 class="tagline">Click Once to Know</h2>
             </div>
             
             <div class="login-body">
@@ -75,4 +75,3 @@
 
 </html>
 
-test
