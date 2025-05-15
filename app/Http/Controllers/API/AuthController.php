@@ -56,7 +56,7 @@ class AuthController extends Controller
                     $profile = Guru::where('id_user', $user->id_user)->first();
                     break;
                 case 'orangtua':
-                    $profile = Orangtua::where('id_user', $user->id_user)->first();
+                    $profile = OrangTua::where('id_user', $user->id_user)->first();
                     break;
                 case 'staf':
                     $profile = Staf::where('id_user', $user->id_user)->first();
