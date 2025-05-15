@@ -496,8 +496,10 @@ class GuruController extends Controller
                 $status = $this->getStatusJadwal($item->waktu_mulai, $item->waktu_selesai);
 
                 return [
+                    'id_jadwal' => $item->id_jadwal,
                     'hari' => $item->hari,
                     'kelas' => $item->kelas->nama_kelas ?? '-',
+                    'id_kelas' => $item->kelas->id_kelas ?? '-',
                     'mata_pelajaran' => $item->mataPelajaran->nama ?? '-',
                     'waktu' => $item->waktu_mulai->format('H:i') . ' - ' . $item->waktu_selesai->format('H:i'),
                     'status' => $status,
@@ -701,13 +703,16 @@ class GuruController extends Controller
 
             // Ambil data siswa berdasarkan kelas dari jadwal
             $siswa = Siswa::where('id_kelas', $jadwal->id_kelas)
-                ->with(['absensi' => function ($query) use ($id_jadwal) {
-                    $query->where('id_jadwal', $id_jadwal)
-                        ->whereDate('tanggal', now());
-                }])
+                ->with([
+                    'absensi' => function ($query) use ($id_jadwal) {
+                        $query->where('id_jadwal', $id_jadwal)
+                            ->whereDate('tanggal', now());
+                    },
+                    'orangTua' // tambah relasi orang tua
+                ])
                 ->get();
 
-            // Format data siswa dengan status kehadiran
+
             $data = $siswa->map(function ($item) use ($id_jadwal) {
                 $absen = $item->absensi->first();
                 return [
@@ -715,8 +720,16 @@ class GuruController extends Controller
                     'nama' => $item->nama,
                     'nis' => $item->nis,
                     'status_kehadiran' => $absen ? $absen->status : null,
+                    'orang_tua' => $item->orangTua ? [
+                        'id' => $item->orangTua->id_orangtua,
+                        'nama_lengkap' => $item->orangTua->nama_lengkap,
+                        'alamat' => $item->orangTua->alamat,
+                        'nomor_telepon' => $item->orangTua->nomor_telepon,
+                        'pekerjaan' => $item->orangTua->pekerjaan,
+                    ] : null,
                 ];
             });
+
 
             return response()->json([
                 'success' => true,
