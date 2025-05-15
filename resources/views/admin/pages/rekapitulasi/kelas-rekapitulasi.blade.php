@@ -9,14 +9,12 @@
                 <!-- Header Judul -->
                 <header class="judul">
                     <h1 class="mb-3">
-                        <a href="{{ url('/rekapitulasi') }}" class="text-decoration-none text-success fw-semibold">
-                            Rekapitulasi Absensi
-                        </a>
+                        <a href="{{ url('/rekapitulasi') }}" class="text-decoration-none text-success fw-semibold"> Rekapitulasi Absensi </a>
                         <span class="fs-5 text-muted d-block d-sm-inline mt-1 mt-sm-0">/ {{ $kelas->nama_kelas }}</span>
                     </h1>
                     <p class="mb-2">
                         Rekapitulasi kehadiran siswa kelas {{ $kelas->nama_kelas }}
-                        @if ($tahunAjaran)
+                        @if (isset($tahunAjaran) && $tahunAjaran)
                             ({{ $tahunAjaran->nama_tahun_ajaran }})
                         @endif
                     </p>
@@ -69,7 +67,7 @@
                     </div>
 
                     <!-- Judul Rekapitulasi -->
-                    <h5 class="mb-3">Rekapitulasi Kehadiran Bulan {{ $bulanList[$bulan] ?? '' }} {{ $tahun }}</h5>
+                    <h5 class="mb-3">Rekapitulasi Kehadiran Bulan {{ $bulanList[$bulan] ?? '-' }} {{ $tahun }}</h5>
 
                     <!-- Tabel Rekapitulasi -->
                     <div class="table-responsive">
@@ -91,7 +89,7 @@
                             <tbody>
                                 @forelse ($siswaList as $index => $siswa)
                                     @php
-                                        $rekapSiswa  = $rekapData[$siswa->id_siswa] ?? null;
+                                        $rekapSiswa  = $rekapData->where('id_siswa', $siswa->id_siswa)->first() ?? null;
                                         $jumlahHadir = $rekapSiswa->jumlah_hadir ?? 0;
                                         $jumlahSakit = $rekapSiswa->jumlah_sakit ?? 0;
                                         $jumlahIzin  = $rekapSiswa->jumlah_izin ?? 0;
@@ -121,13 +119,11 @@
                                     <th class="text-center">{{ $rekapData->sum('jumlah_izin') ?? 0 }}</th>
                                     <th class="text-center">{{ $rekapData->sum('jumlah_alpa') ?? 0 }}</th>
                                     <th class="text-center">
-                                        {{
-                                            $rekapData->sum(function($item) {
-                                                return ($item->jumlah_hadir ?? 0)
-                                                     + ($item->jumlah_sakit ?? 0)
-                                                     + ($item->jumlah_izin ?? 0)
-                                                     + ($item->jumlah_alpa ?? 0);
-                                            })
+                                        {{ $totalKehadiran = 
+                                            ($rekapData->sum('jumlah_hadir') ?? 0) +
+                                            ($rekapData->sum('jumlah_sakit') ?? 0) +
+                                            ($rekapData->sum('jumlah_izin') ?? 0) +
+                                            ($rekapData->sum('jumlah_alpa') ?? 0)
                                         }}
                                     </th>
                                 </tr>

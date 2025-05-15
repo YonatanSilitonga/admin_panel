@@ -53,20 +53,22 @@
                             </div>
 
                             <!-- Tombol -->
-                            <button type="submit" class="btn btn-outline-success">
+                           <button type="submit" class="btn btn-outline-success">
                                 <i class="bi bi-filter me-1"></i> Filter
-                            </button>
+                            </button> 
 
-                            <a href="{{ route('kelas.create') }}" class="btn btn-success">
-                                <i class="bi bi-plus-circle me-1"></i> Tambah
-                            </a>
+                           
 
                             @if(request()->has('tingkat') || request()->has('tahun_ajaran') || request()->has('search'))
                                 <a href="{{ route('kelas.index') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-x-circle me-1"></i> Reset
                                 </a>
                             @endif
+                            
                         </form>
+                         <a href="{{ route('kelas.create') }}" class="btn btn-success">
+                                <i class="bi bi-plus-circle me-1"></i> Tambah
+                            </a>
                     </div>
 
                     <!-- Cek apakah kelas kosong -->

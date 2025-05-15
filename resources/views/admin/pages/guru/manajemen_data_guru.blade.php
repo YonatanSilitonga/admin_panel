@@ -69,66 +69,63 @@
     </div>
 </div>
 
-                    <!-- Tabel Data Guru -->
-                    <div class="table-responsive">
-                        <table id="guruTable" class="table table-striped table-bordered table-sm">
-                            <thead class="bg-success text-white">
-                                <tr>
-                                    <th width="5%">No</th>
-                                    <th width="30%">Nama Lengkap</th>
-                                    <th width="15%">NIP</th>
-                                    <th width="30%">Mata Pelajaran</th>
-                                    <th width="10%">Status</th>
-                                    <th width="10%" class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($gurus as $index => $guru)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $guru->nama_lengkap ?? '-' }}</td>
-                                        <td>{{ $guru->nip ?? '-' }}</td>
-                                        <td>
-                                            @if($guru->mataPelajaran && $guru->mataPelajaran->count() > 0)
-                                                {{ $guru->mataPelajaran->pluck('nama')->join(', ') }}
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($guru->status == 'aktif')
-                                                <span class="badge bg-success">Aktif</span>
-                                            @else
-                                                <span class="badge bg-secondary">Non-Aktif</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="d-flex justify-content-center gap-2">
-                                                <a href="javascript:void(0);" class="text-primary btn-view-guru"
-                                                    data-id="{{ $guru->id_guru }}" data-bs-toggle="modal"
-                                                    data-bs-target="#modalViewGuru" title="Lihat">
-                                                    <i class="bi bi-eye-fill fs-5"></i>
-                                                </a>
+<!-- Tabel Data Guru -->
+<h5 class="mb-3">Daftar Guru Pengajar</h5>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-sm">
+        <thead class="bg-success text-white">
+            <tr>
+                <th class="text-center" style="min-width: 40px;">No</th>
+                <th style="min-width: 150px;">Nama Lengkap</th>
+                <th style="min-width: 120px;">NIP</th>
+                <th style="min-width: 180px;">Mata Pelajaran</th>
+                <th class="text-center" style="min-width: 100px;">Status</th>
+                <th class="text-center" style="min-width: 100px;">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($gurus as $index => $guru)
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td>{{ $guru->nama_lengkap ?? '-' }}</td>
+                    <td>{{ $guru->nip ?? '-' }}</td>
+                    <td>
+                        @if($guru->mataPelajaran && $guru->mataPelajaran->count() > 0)
+                            {{ $guru->mataPelajaran->pluck('nama')->join(', ') }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="text-center">
+                        @if($guru->status == 'aktif')
+                            <span class="badge bg-success">Aktif</span>
+                        @else
+                            <span class="badge bg-secondary">Non-Aktif</span>
+                        @endif
+                    </td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="javascript:void(0);" class="text-primary btn-view-guru"
+                                data-id="{{ $guru->id_guru }}" data-bs-toggle="modal"
+                                data-bs-target="#modalViewGuru" title="Lihat">
+                                <i class="bi bi-eye-fill fs-5"></i>
+                            </a>
 
-                                                <a href="{{ url('guru/' . $guru->id_guru . '/edit') }}" class="text-warning"
-                                                    title="Edit">
-                                                    <i class="bi bi-pencil-square fs-5"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center py-3">Tidak ada data guru.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
+                            <a href="{{ url('guru/' . $guru->id_guru . '/edit') }}" class="text-warning" title="Edit">
+                                <i class="bi bi-pencil-square fs-5"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="text-center">Tidak ada data guru.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
 
     <!-- Modal View Guru -->
     <div class="modal fade" id="modalViewGuru" tabindex="-1" aria-labelledby="modalViewGuruLabel" aria-hidden="true">

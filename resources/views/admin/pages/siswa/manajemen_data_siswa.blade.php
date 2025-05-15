@@ -74,81 +74,75 @@
     </div>
 </div>
 
-
-                    <!-- Tabel Siswa -->
-                    <div class="table-responsive">
-                        @if($siswaList->isEmpty())
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle me-2"></i> Tidak ada data siswa.
+<!-- Tabel Siswa -->
+<h5 class="mb-3">Daftar Siswa</h5>
+<div class="table-responsive">
+    @if($siswaList->isEmpty())
+        <div class="alert alert-info mb-0">
+            <i class="bi bi-info-circle me-2"></i> Tidak ada data siswa.
+        </div>
+    @else
+        <table id="siswaTable" class="table table-striped table-bordered table-sm w-100">
+            <thead class="bg-success text-white">
+                <tr>
+                    <th width="5%">No</th>
+                    <th width="25%">Nama Siswa</th>
+                    <th width="10%">NIS</th>
+                    <th width="10%">Kelas</th>
+                    <th width="30%">Tahun Ajaran</th>
+                    <th width="10%">Status</th>
+                    <th width="10%" class="text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($siswaList as $index => $siswa)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $siswa->nama ?? '-' }}</td>
+                        <td>{{ $siswa->nis ?? '-' }}</td>
+                        <td>
+                            @if($siswa->kelas)
+                                {{ $siswa->kelas->nama_kelas }}
+                                {!! $siswa->kelas->getStatusBadgeHtml() !!}
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($siswa->tahunAjaran)
+                                {{ $siswa->tahunAjaran->nama_tahun_ajaran }}
+                                @if($siswa->tahunAjaran->aktif)
+                                    <span class="badge bg-success">Aktif</span>
+                                @endif
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($siswa->status == 'aktif')
+                                <span class="badge bg-success">Aktif</span>
+                            @else
+                                <span class="badge bg-secondary">Non-Aktif</span>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="javascript:void(0);" class="text-primary btn-view-siswa"
+                                    data-id="{{ $siswa->id_siswa }}" title="Lihat">
+                                    <i class="bi bi-eye-fill fs-5"></i>
+                                </a>
+                                <a href="{{ url('siswa/' . $siswa->id_siswa . '/edit') }}" class="text-warning" title="Edit">
+                                    <i class="bi bi-pencil-square fs-5"></i>
+                                </a>
                             </div>
-                        @else
-                            <table id="siswaTable" class="table table-striped table-bordered table-sm">
-                                <thead class="bg-success text-white">
-                                    <tr>
-                                        <th width="5%">No</th>
-                                        <th width="30%">Nama Siswa</th>
-                                        <th width="10%">NIS</th>
-                                        <th width="10%">Kelas</th>
-                                        <th width="25%">Tahun Ajaran</th>
-                                        <th width="10%">Status</th>
-                                        <th width="10%" class="text-center">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($siswaList as $index => $siswa)
-                                        <tr>
-                                            <td>{{ $index + 1 }}</td>
-                                            <td>{{ $siswa->nama ?? '-' }}</td>
-                                            <td>{{ $siswa->nis ?? '-' }}</td>
-                                            <td>
-                                                @if($siswa->kelas)
-                                                    {{ $siswa->kelas->nama_kelas }}
-                                                    {!! $siswa->kelas->getStatusBadgeHtml() !!}
-                                                @else
-                                                    -
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($siswa->tahunAjaran)
-                                                    {{ $siswa->tahunAjaran->nama_tahun_ajaran }}
-                                                    @if($siswa->tahunAjaran->aktif)
-                                                        <span class="badge bg-success">Aktif</span>
-                                                    @endif
-                                                @else
-                                                    -
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($siswa->status == 'aktif')
-                                                    <span class="badge bg-success">Aktif</span>
-                                                @else
-                                                    <span class="badge bg-secondary">Non-Aktif</span>
-                                                @endif
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="d-flex justify-content-center gap-2">
-                                                    <a href="javascript:void(0);" class="text-primary btn-view-siswa"
-                                                        data-id="{{ $siswa->id_siswa }}" title="Lihat">
-                                                        <i class="bi bi-eye-fill fs-5"></i>
-                                                    </a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+</div>
 
-                                                    <a href="{{ url('siswa/' . $siswa->id_siswa . '/edit') }}"
-                                                        class="text-warning" title="Edit">
-                                                        <i class="bi bi-pencil-square fs-5"></i>
-                                                    </a>
-                                                    
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
 
 
     <!-- Modal View Siswa -->

@@ -2,97 +2,114 @@
     {{-- Sidebar Header --}}
     <header class="sidebar-header">
         <a href="{{ url('/admin/beranda') }}" class="header-logo">
-            <img src="{{ asset('images/HadirIn.jpg') }}" alt="HadirIn Logo" style="width: 200px">
+            <img src="{{ asset('images/HadirIn.jpg') }}" alt="HadirIn Logo" class="logo-img">
         </a>
-        <button class="toggler" type="button" aria-label="Toggle Sidebar" onclick="toggleSidebar()">
+        <button class="toggler" type="button" aria-label="Toggle Sidebar" id="sidebar-toggler">
             <span class="material-symbols-rounded">menu</span>
         </button>
     </header>
 
     {{-- Sidebar Navigation --}}
     <nav class="sidebar-nav">
-
         {{-- Primary Navigation --}}
         <ul class="nav-list primary-nav">
-            <li class="nav-item">
-                <a href="{{ url('/admin/beranda') }}" class="nav-link {{ Request::is('admin/beranda') ? 'active' : '' }}">
-                    <span class="nav-icon material-symbols-rounded">dashboard</span>
-                    <span class="nav-label">Beranda</span>
-                    <span class="nav-tooltip">Beranda</span>
-                </a>
-            </li>
+            @php
+                $navItems = [
+                    [
+                        'url' => '/admin/beranda',
+                        'pattern' => 'admin/beranda',
+                        'icon' => 'dashboard',
+                        'label' => 'Beranda',
+                        'tooltip' => 'Beranda'
+                    ],
+                    [
+                        'url' => '/rekapitulasi',
+                        'pattern' => ['rekapitulasi*', 'admin/rekapitulasi*'],
+                        'icon' => 'edit_note',
+                        'label' => 'Rekapitulasi',
+                        'tooltip' => 'Rekapitulasi'
+                    ],
+                    [
+                        'url' => '/guru',
+                        'pattern' => 'guru*',
+                        'icon' => 'school',
+                        'label' => 'Manajemen Data Guru',
+                        'tooltip' => 'Data Guru'
+                    ],
+                    [
+                        'url' => '/orang-tua',
+                        'pattern' => ['orang-tua*', 'admin/orang_tua*'],
+                        'icon' => 'family_restroom',
+                        'label' => 'Manajemen Data Orang Tua',
+                        'tooltip' => 'Data Orang Tua'
+                    ],
+                    [
+                        'url' => '/siswa',
+                        'pattern' => ['siswa*', 'admin/siswa*'],
+                        'icon' => 'person_pin',
+                        'label' => 'Manajemen Data Siswa',
+                        'tooltip' => 'Data Siswa'
+                    ],
+                    [
+                        'url' => '/users',
+                        'pattern' => ['users*', 'admin/users*'],
+                        'icon' => 'manage_accounts',
+                        'label' => 'Manajemen Akun Pengguna',
+                        'tooltip' => 'Akun Pengguna'
+                    ],
+                    [
+                        'url' => '/kelas',
+                        'pattern' => 'kelas*',
+                        'icon' => 'class',
+                        'label' => 'Manajemen Data Kelas',
+                        'tooltip' => 'Data Kelas'
+                    ],
+                    [
+                        'url' => '/mata-pelajaran',
+                        'pattern' => 'mata-pelajaran*',
+                        'icon' => 'menu_book',
+                        'label' => 'Manajemen Mata Pelajaran',
+                        'tooltip' => 'Mata Pelajaran'
+                    ],
+                    [
+                        'url' => '/jadwal-pelajaran',
+                        'pattern' => 'jadwal-pelajaran*',
+                        'icon' => 'event',
+                        'label' => 'Jadwal Pelajaran',
+                        'tooltip' => 'Jadwal'
+                    ],
+                    [
+                        'url' => '/tahun-ajaran',
+                        'pattern' => 'tahun-ajaran*',
+                        'icon' => 'date_range',
+                        'label' => 'Manajemen Tahun Ajaran',
+                        'tooltip' => 'Tahun Ajaran'
+                    ],
+                ];
+            @endphp
 
-            <li class="nav-item">
-                <a href="{{ url('/rekapitulasi') }}" class="nav-link {{ Request::is('rekapitulasi*') || Request::is('admin/rekapitulasi*') ? 'active' : '' }}">
-                    <span class="nav-icon material-symbols-rounded">edit_note</span>
-                    <span class="nav-label">Rekapitulasi</span>
-                    <span class="nav-tooltip">Rekapitulasi</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{{ url('/guru') }}" class="nav-link {{ Request::is('guru*') ? 'active' : '' }}">
-                    <span class="nav-icon material-symbols-rounded">school</span>
-                    <span class="nav-label">Manajemen Data Guru</span>
-                    <span class="nav-tooltip">Data Guru</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{{ url('/orang-tua') }}" class="nav-link {{ Request::is('orang-tua*') || Request::is('admin/orang_tua*') ? 'active' : '' }}">
-                    <span class="nav-icon material-symbols-rounded">family_restroom</span>
-                    <span class="nav-label">Manajemen Data Orang Tua</span>
-                    <span class="nav-tooltip">Data Orang Tua</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{{ url('/siswa') }}" class="nav-link {{ Request::is('siswa*') || Request::is('admin/siswa*') ? 'active' : '' }}">
-                    <span class="nav-icon material-symbols-rounded">person_pin</span>
-                    <span class="nav-label">Manajemen Data Siswa</span>
-                    <span class="nav-tooltip">Data Siswa</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{{ url('/users') }}" class="nav-link {{ Request::is('users*') || Request::is('admin/users*') ? 'active' : '' }}">
-                    <span class="nav-icon material-symbols-rounded">manage_accounts</span>
-                    <span class="nav-label">Manajemen Akun Pengguna</span>
-                    <span class="nav-tooltip">Akun Pengguna</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{{ url('/kelas') }}" class="nav-link {{ Request::is('kelas*') ? 'active' : '' }}">
-                    <span class="nav-icon material-symbols-rounded">class</span>
-                    <span class="nav-label">Manajemen Data Kelas</span>
-                    <span class="nav-tooltip">Data Kelas</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{{ url('/mata-pelajaran') }}" class="nav-link {{ Request::is('mata-pelajaran*') ? 'active' : '' }}">
-                    <span class="nav-icon material-symbols-rounded">menu_book</span>
-                    <span class="nav-label">Manajemen Mata Pelajaran</span>
-                    <span class="nav-tooltip">Mata Pelajaran</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{{ url('/jadwal-pelajaran') }}" class="nav-link {{ Request::is('jadwal-pelajaran*') ? 'active' : '' }}">
-                    <span class="nav-icon material-symbols-rounded">event</span>
-                    <span class="nav-label">Jadwal Pelajaran</span>
-                    <span class="nav-tooltip">Jadwal</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{{ url('/tahun-ajaran') }}" class="nav-link {{ Request::is('tahun-ajaran*') ? 'active' : '' }}">
-                    <span class="nav-icon material-symbols-rounded">date_range</span>
-                    <span class="nav-label">Manajemen Tahun Ajaran</span>
-                    <span class="nav-tooltip">Tahun Ajaran</span>
-                </a>
-            </li>
+            @foreach($navItems as $item)
+                <li class="nav-item">
+                    @php
+                        $isActive = false;
+                        if (is_array($item['pattern'])) {
+                            foreach ($item['pattern'] as $pattern) {
+                                if (Request::is($pattern)) {
+                                    $isActive = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            $isActive = Request::is($item['pattern']);
+                        }
+                    @endphp
+                    <a href="{{ url($item['url']) }}" class="nav-link {{ $isActive ? 'active' : '' }}">
+                        <span class="nav-icon material-symbols-rounded">{{ $item['icon'] }}</span>
+                        <span class="nav-label">{{ $item['label'] }}</span>
+                        <span class="nav-tooltip">{{ $item['tooltip'] }}</span>
+                    </a>
+                </li>
+            @endforeach
         </ul>
 
         {{-- Secondary Navigation --}}
@@ -108,22 +125,43 @@
                 </form>
             </li>
         </ul>
-
     </nav>
 </aside>
 
-{{-- Sidebar Toggle Script --}}
 <script>
-    function toggleSidebar() {
+    document.addEventListener('DOMContentLoaded', function() {
         const sidebar = document.getElementById('sidebar');
-        sidebar.classList.toggle('collapsed');
-        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const sidebar = document.getElementById('sidebar');
+        const sidebarToggler = document.getElementById('sidebar-toggler');
+        
+        // Restore sidebar state from localStorage
         if (localStorage.getItem('sidebarCollapsed') === 'true') {
             sidebar.classList.add('collapsed');
         }
+        
+        // Toggle sidebar with animation
+        sidebarToggler.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        });
+        
+        // Close sidebar on mobile when clicking outside
+        document.addEventListener('click', function(event) {
+            const isMobile = window.innerWidth < 768;
+            const isClickInsideSidebar = sidebar.contains(event.target);
+            const isClickOnToggler = sidebarToggler.contains(event.target);
+            
+            if (isMobile && !isClickInsideSidebar && !isClickOnToggler && !sidebar.classList.contains('collapsed')) {
+                sidebar.classList.add('collapsed');
+                localStorage.setItem('sidebarCollapsed', true);
+            }
+        });
+        
+        // Update sidebar state on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth < 768 && !sidebar.classList.contains('collapsed')) {
+                sidebar.classList.add('collapsed');
+                localStorage.setItem('sidebarCollapsed', true);
+            }
+        });
     });
 </script>

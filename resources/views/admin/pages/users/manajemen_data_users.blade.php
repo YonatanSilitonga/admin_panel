@@ -30,50 +30,52 @@
                     @endif
 
                     <!-- Tabel Data Pengguna -->
-                    <div class="table-responsive">
-                        <table id="usersTable" class="table table-striped table-bordered table-sm align-middle">
-                            <thead class="bg-success text-white">
-                                <tr>
-                                    <th width="5%">No</th>
-                                    <th width="25%">Username</th>
-                                    <th width="20%">Role</th>
-                                    <th width="20%">Terakhir Login</th>
-                                    <th width="15%" class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($users as $index => $user)
-                                    <tr>
-                                        <td class="text-center">{{ $index + 1 }}</td>
-                                        <td>{{ $user->username }}</td>
-                                        <td>{{ $user->role->role ?? '-' }}</td>
-                                        <td>{{ $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->format('d-m-Y H:i') : '-' }}</td>
-                                        <td class="text-center">
-                                            <div class="d-flex justify-content-center gap-2">
-                                                <!-- Ubah semua tombol view untuk selalu menggunakan modal -->
-                                                <a href="{{ route('users.show', $user->id_user) }}" class="text-primary" title="Lihat">
-                                                        <i class="bi bi-eye-fill fs-5"></i>
-                                                    </a>
+<h5 class="mb-3">Daftar Pengguna</h5>
+<div class="table-responsive">
+    @if($users->isEmpty())
+        <div class="alert alert-info mb-0">
+            <i class="bi bi-info-circle me-2"></i> Tidak ada data pengguna.
+        </div>
+    @else
+        <table id="usersTable" class="table table-striped table-bordered table-sm w-100 align-middle">
+            <thead class="bg-success text-white">
+                <tr>
+                    <th width="5%" class="text-center">No</th>
+                    <th width="30%">Username</th>
+                    <th width="20%">Role</th>
+                    <th width="20%">Terakhir Login</th>
+                    <th width="15%" class="text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($users as $index => $user)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>{{ $user->username }}</td>
+                        <td>{{ $user->role->role ?? '-' }}</td>
+                        <td>{{ $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->format('d-m-Y H:i') : '-' }}</td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="{{ route('users.show', $user->id_user) }}"
+                                   class="text-primary"
+                                   title="Lihat">
+                                    <i class="bi bi-eye-fill fs-5"></i>
+                                </a>
 
-
-                                                <a href="{{ route('users.edit', $user->id_user) }}" class="text-warning" title="Edit">
-                                                    <i class="bi bi-pencil-square fs-5"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center py-3">Tidak ada data pengguna.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>                    
-                </div>
-            </div>
-        </main>
-    </div>
+                                <a href="{{ route('users.edit', $user->id_user) }}"
+                                   class="text-warning"
+                                   title="Edit">
+                                    <i class="bi bi-pencil-square fs-5"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+</div>
+    
 
     <!-- Modal View User -->
     <div class="modal fade" id="modalViewUser" tabindex="-1" aria-labelledby="modalViewUserLabel"

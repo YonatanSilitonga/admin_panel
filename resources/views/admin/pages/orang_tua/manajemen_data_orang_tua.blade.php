@@ -68,76 +68,72 @@
                         </a>
                         </div>
                     </div>
+<!-- Tabel Data Orang Tua -->
+<h5 class="mb-3">Daftar Orang Tua / Wali Murid</h5>
+<div class="table-responsive">
+    <table id="ortuTable" class="table table-striped table-bordered table-sm" >
+        <thead class="bg-success text-white">
+            <tr>
+                <th class="text-center" style="min-width: 40px;">No</th>
+                <th style="min-width: 150px;">Nama Orang Tua</th>
+                <th style="min-width: 180px;">Nama Anak</th>
+                <th style="min-width: 130px;">Nomor Telepon</th>
+                <th class="text-center" style="min-width: 100px;">Status</th>
+                <th class="text-center" style="min-width: 100px;">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($orangTuaList as $index => $orangTua)
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td>{{ $orangTua->nama_lengkap }}</td>
+                    <td>
+                        @if($orangTua->siswa->count() > 0)
+                            {{ $orangTua->siswa->pluck('nama')->join(', ') }}
+                        @else
+                            <span class="text-muted">Belum ada data anak</span>
+                        @endif
+                    </td>
+                    <td>{{ $orangTua->nomor_telepon ?? '-' }}</td>
+                    <td class="text-center">
+                        @if($orangTua->status == 'aktif')
+                            <span class="badge bg-success">Aktif</span>
+                        @elseif($orangTua->status == 'nonaktif')
+                            <span class="badge bg-secondary">Non-Aktif</span>
+                        @else
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        @endif
+                    </td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="javascript:void(0);" class="text-primary btn-view-orangtua"
+                                data-id="{{ $orangTua->id_orangtua }}"
+                                data-nama="{{ $orangTua->nama_lengkap }}"
+                                data-alamat="{{ $orangTua->alamat ?? '-' }}"
+                                data-pekerjaan="{{ $orangTua->pekerjaan ?? '-' }}"
+                                data-nomor="{{ $orangTua->nomor_telepon ?? '-' }}"
+                                data-status="{{ $orangTua->status }}"
+                                data-bs-toggle="modal" data-bs-target="#modalViewOrangtua"
+                                title="Lihat">
+                                <i class="bi bi-eye-fill fs-5"></i>
+                            </a>
 
-                    <!-- Tabel Orang Tua -->
-                    <div class="table-responsive">
-                        <table id="orangtuaTable" class="table table-striped table-bordered table-sm">
-                            <thead class="bg-success text-white">
-                                <tr>
-                                    <th width="5%">No</th>
-                                    <th width="20%">Nama Orang Tua</th>
-                                    <th width="30%">Nama Anak</th>
-                                    <th width="15%">Nomor Telepon</th>
-                                    <th width="10%">Status</th>
-                                    <th width="15%" class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($orangTuaList as $index => $orangTua)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $orangTua->nama_lengkap }}</td>
-                                        <td>
-                                            @if($orangTua->siswa->count() > 0)
-                                                {{ $orangTua->siswa->pluck('nama')->join(', ') }}
-                                            @else
-                                                <span class="text-muted">Belum ada data anak</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $orangTua->nomor_telepon ?? '-' }}</td>
-                                        <td>
-                                            @if($orangTua->status == 'aktif')
-                                                <span class="badge bg-success">Aktif</span>
-                                            @elseif($orangTua->status == 'nonaktif')
-                                                <span class="badge bg-secondary">Non-Aktif</span>
-                                            @else
-                                                <span class="badge bg-warning">Pending</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="d-flex justify-content-center gap-2">
-                                                <a href="javascript:void(0);" class="text-primary btn-view-orangtua"
-                                                    data-id="{{ $orangTua->id_orangtua }}"
-                                                    data-nama="{{ $orangTua->nama_lengkap }}"
-                                                    data-alamat="{{ $orangTua->alamat ?? '-' }}"
-                                                    data-pekerjaan="{{ $orangTua->pekerjaan ?? '-' }}"
-                                                    data-nomor="{{ $orangTua->nomor_telepon ?? '-' }}"
-                                                    data-status="{{ $orangTua->status }}"
-                                                    data-bs-toggle="modal" data-bs-target="#modalViewOrangtua"
-                                                    title="Lihat">
-                                                    <i class="bi bi-eye-fill fs-5"></i>
-                                                </a>
+                            <a href="{{ route('orang-tua.edit', $orangTua->id_orangtua) }}"
+                                class="text-warning" title="Edit">
+                                <i class="bi bi-pencil-square fs-5"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="text-center">Tidak ada data orang tua.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
 
-                                                <a href="{{ route('orang-tua.edit', $orangTua->id_orangtua) }}"
-                                                    class="text-warning" title="Edit">
-                                                    <i class="bi bi-pencil-square fs-5"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center py-3">Tidak ada data orang tua.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                </div>
-            </div>
-        </main>
-    </div>
 
     <!-- Modal View Orang Tua -->
     <div class="modal fade" id="modalViewOrangtua" tabindex="-1" aria-labelledby="modalViewOrangtuaLabel"
