@@ -65,8 +65,7 @@ class Jadwal extends Model
      */
     public function getConflicts()
     {
-        return self::where('hari', $this->hari)
-            ->where('id_jadwal', '!=', $this->id_jadwal)
+        $query = self::where('hari', $this->hari)
             ->where(function($query) {
                 // Check for time overlaps
                 $query->where(function($q) {
@@ -85,8 +84,14 @@ class Jadwal extends Model
                 $query->where('id_kelas', $this->id_kelas)
                       ->orWhere('id_guru', $this->id_guru);
             })
-            ->where('status', 'aktif')
-            ->get();
+            ->where('status', 'aktif');
+            
+        // If this is an existing jadwal (has an ID), exclude it from conflict check
+        if (isset($this->id_jadwal)) {
+            $query->where('id_jadwal', '!=', $this->id_jadwal);
+        }
+        
+        return $query->get();
     }
     
     /**

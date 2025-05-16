@@ -30,30 +30,48 @@ class JadwalSeeder extends Seeder
         
         // Get all classes
         $allKelas = DB::table('kelas')->get();
+        if ($allKelas->isEmpty()) {
+            $this->command->info('No classes found. Please seed the kelas table first.');
+            return;
+        }
         
         // Get active tahun ajaran
         $tahunAjaranAktif = DB::table('tahun_ajaran')->where('aktif', 1)->first();
-        $idTahunAjaran = $tahunAjaranAktif ? $tahunAjaranAktif->id_tahun_ajaran : 1;
+        if (!$tahunAjaranAktif) {
+            $this->command->info('No active tahun ajaran found. Using the first tahun ajaran available.');
+            $tahunAjaranAktif = DB::table('tahun_ajaran')->first();
+            
+            if (!$tahunAjaranAktif) {
+                $this->command->error('No tahun ajaran found. Please seed the tahun_ajaran table first.');
+                return;
+            }
+        }
+        $idTahunAjaran = $tahunAjaranAktif->id_tahun_ajaran;
         
         // Get all teachers and subjects
         $allGuru = DB::table('guru')->get();
+        if ($allGuru->isEmpty()) {
+            $this->command->error('No teachers found. Please seed the guru table first.');
+            return;
+        }
+        
         $allMapel = DB::table('mata_pelajaran')->get();
+        if ($allMapel->isEmpty()) {
+            $this->command->error('No subjects found. Please seed the mata_pelajaran table first.');
+            return;
+        }
+        
+        $now = Carbon::now();
         
         // For each class, create a schedule for each day and session
         foreach ($allKelas as $kelas) {
             foreach ($hari as $h) {
                 foreach ($sesi as $s => $waktu) {
-                    // Skip Friday afternoon (only 4 sessions on Friday)
-                    if ($h == 'jumat' && $s > 4) {
-                        continue;
-                    }
-                    
                     // Randomly assign a teacher and subject
                     $randomGuru = $allGuru[array_rand($allGuru->toArray())];
                     $randomMapel = $allMapel[array_rand($allMapel->toArray())];
                     
                     $jadwal[] = [
-                        'id_jadwal' => $id++,
                         'id_kelas' => $kelas->id_kelas,
                         'id_mata_pelajaran' => $randomMapel->id_mata_pelajaran,
                         'id_guru' => $randomGuru->id_guru,
@@ -62,15 +80,26 @@ class JadwalSeeder extends Seeder
                         'waktu_mulai' => $waktu['mulai'],
                         'waktu_selesai' => $waktu['selesai'],
                         'status' => 'aktif',
-                        'dibuat_pada' => Carbon::now(),
+                        'dibuat_pada' => $now,
                         'dibuat_oleh' => 'system',
-                        'diperbarui_pada' => Carbon::now(),
+                        'diperbarui_pada' => $now,
                         'diperbarui_oleh' => 'system'
                     ];
+                    
+                    // Insert in batches of 100 to avoid memory issues
+                    if (count($jadwal) >= 100) {
+                        DB::table('jadwal')->insert($jadwal);
+                        $jadwal = [];
+                    }
                 }
             }
         }
         
-        DB::table('jadwal')->insert($jadwal);
+        // Insert any remaining records
+        if (!empty($jadwal)) {
+            DB::table('jadwal')->insert($jadwal);
+        }
+        
+        $this->command->info('Jadwal seeded successfully!');
     }
 }

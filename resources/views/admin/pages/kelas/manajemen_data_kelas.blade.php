@@ -20,7 +20,7 @@
                             <div class="d-flex align-items-center gap-2">
                                 <label for="tingkat" class="me-2 mb-0">Tingkat:</label>
                                 <select name="tingkat" id="tingkat" class="form-select">
-                                    <option value="">Semua Tingkat</option>
+                                    <option value="">Semua</option>
                                     @foreach($tingkatList as $tingkat)
                                         <option value="{{ $tingkat }}" {{ request('tingkat') == $tingkat ? 'selected' : '' }}>{{ $tingkat }}</option>
                                     @endforeach

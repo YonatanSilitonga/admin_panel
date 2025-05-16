@@ -19,7 +19,7 @@
         <div class="d-flex align-items-center gap-2">
             <label for="kelas" class="form-label form-label-sm me-2 mb-0">Kelas:</label>
             <select name="kelas" id="kelas" class="form-select form-select-sm" style="min-width: 140px; max-width: 160px;">
-                <option value="">Semua Kelas</option>
+                <option value="">Semua</option>
                 @foreach ($kelasList as $kelas)
                     <option value="{{ $kelas->id_kelas }}"
                         {{ request('kelas') == $kelas->id_kelas ? 'selected' : '' }}>
