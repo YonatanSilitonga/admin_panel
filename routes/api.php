@@ -68,6 +68,13 @@ Route::get('guru/daftar-kelas', [KelasController::class, 'getAllKelas']);
 
 Route::get('guru/rekapitulasi', [GuruController::class, 'getRekapitulasi']);
 
+// Gunakan nama yang konsisten
+Route::get('/view-file/{fileName}', [SuratIzinController::class, 'viewFile']);
+
+// Simplifikasi rute, hilangkan parameter query string
+Route::get('/storage/{path}', [SuratIzinController::class, 'viewFile'])
+     ->where('path', '.*'); // Mengizinkan path bersarang
+
 // Protected routes - menggunakan middleware 
 Route::middleware('auth:sanctum')->group(function () {
     // Auth
@@ -181,20 +188,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('kelas/{id}', [GuruController::class, 'getDetailKelas']); // opsional
         Route::get('siswa', [GuruController::class, 'getSiswaByKelasId']);
         Route::get('siswa/kelas/{id}', [GuruController::class, 'getSiswaKelas']); // fallback
-        
+
         Route::get('/riwayat-kehadiran/{id_kelas}', [GuruController::class, 'getRiwayatKehadiran']); // fallback
 
         Route::get('/jadwal/{idJadwal}/absensi/check', [AbsensiController::class, 'checkAbsensiExist']);
         Route::get('/jadwal/{idJadwal}/absensi', [AbsensiController::class, 'getAbsensiData']);
         Route::get('/jadwal/{idJadwal}/siswa', [GuruController::class, 'getSiswaByJadwal']);
-        
+
         // POST: Simpan data absensi
         Route::post('/jadwal/{idJadwal}/absensi', [AbsensiController::class, 'saveAbsensi']);
 
         Route::get('/riwayat/siswa/{id_siswa}', [GuruController::class, 'getDetailSiswa']);
-        
-        Route::get('/rekapitulasi/detail', [GuruController::class, 'getDetailRekapitulasi']);
 
+        Route::get('/rekapitulasi/detail', [GuruController::class, 'getDetailRekapitulasi']);
     });
 
     // Orangtua Routes
@@ -225,7 +231,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::post('/surat-izin', [SuratIzinController::class, 'store']);
         Route::post('/surat-izin', [SuratIzinController::class, 'store']);
-        Route::get('/storage/{fileName}', [SuratIzinController::class, 'viewFile']);
     });
 
     // Mata Pelajaran Routes

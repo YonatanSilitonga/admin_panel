@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+
 use App\Models\User;
 use App\Models\OrangTua;
 use App\Models\SuratIzin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -272,20 +274,22 @@ class SuratIzinController extends Controller
         ]);
     }
 
-    public function viewFile($fileName)
+    // File controller
+    public function viewFile($path)
     {
-        $filePath = public_path("storage/lampiran_surat_izin/{$fileName}");
+        // Bersihkan path
+        $cleanPath = str_replace(['..'], '', $path);
 
-        // Cek apakah file ada di lokasi yang diinginkan
-        if (!file_exists($filePath)) {
-            return response()->json([
-                'error' => 'File not found'
-            ], Response::HTTP_NOT_FOUND);
+        // Path yang benar
+        $filePath = storage_path("app/public/" . $cleanPath);
+
+        if (file_exists($filePath)) {
+            return response()->file($filePath);
         }
 
-        // Mengembalikan file dengan header yang sesuai
-        return response()->file($filePath);
+        return response()->json(['error' => 'File tidak ditemukan'], 404);
     }
+
     public function updateStatusSurat(Request $request, $id_user, $id_surat)
     {
         // Validasi input
@@ -325,6 +329,7 @@ class SuratIzinController extends Controller
 
         // Update status surat
         $surat->status = $request->status;
+        $surat->diperbarui_oleh = $user->guru->nama_lengkap ?? 'Guru Tidak Dikenal'; // ⬅️ tambahan ini
         $surat->save();
 
         return response()->json([
@@ -334,6 +339,60 @@ class SuratIzinController extends Controller
                 'id_surat_izin' => $surat->id_surat_izin,
                 'status' => $surat->status,
             ],
+        ]);
+    }
+
+    // Tambahkan route baru untuk mengakses file dengan path lengkap
+    public function viewFileByPath(Request $request)
+    {
+        $filePath = $request->input('path');
+
+        if (empty($filePath)) {
+            return response()->json([
+                'error' => 'No file path provided'
+            ], 400);
+        }
+
+        // Decode URL-encoded path
+        $filePath = urldecode($filePath);
+
+        // Sanitasi path untuk keamanan
+        $filePath = str_replace('..', '', $filePath);
+
+        // Log untuk debugging
+        Log::info('Accessing file by path: ' . $filePath);
+
+        // Coba beberapa kemungkinan lokasi file
+        $possiblePaths = [
+            public_path("storage/{$filePath}"),
+            storage_path("app/public/{$filePath}"),
+            $filePath
+        ];
+
+        // Cek semua kemungkinan path
+        $fullPath = null;
+        foreach ($possiblePaths as $path) {
+            Log::info('Checking path: ' . $path);
+            if (file_exists($path)) {
+                $fullPath = $path;
+                Log::info('File found at: ' . $fullPath);
+                break;
+            }
+        }
+
+        if (!$fullPath) {
+            Log::error('File not found: ' . $filePath);
+            return response()->json([
+                'error' => 'File not found'
+            ], 404);
+        }
+
+        // Tambahkan header untuk menangani CORS
+        return response()->file($fullPath, [
+            'Content-Type' => mime_content_type($fullPath),
+            'Access-Control-Allow-Origin' => '*',
+            'Access-Control-Allow-Methods' => 'GET',
+            'Access-Control-Allow-Headers' => 'Content-Type, Authorization'
         ]);
     }
 }

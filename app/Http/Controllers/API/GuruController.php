@@ -318,6 +318,10 @@ class GuruController extends Controller
             ->whereRaw('LOWER(hari) = ?', [$hariIni]) // cocokkan dengan lowercase
             ->with('kelas.siswa', 'mataPelajaran')
             ->get();
+        // 🔽 Sort jadwal berdasarkan waktu_mulai paling awal
+        $jadwal = $jadwal->sortBy(function ($item) {
+            return Carbon::parse($item->waktu_mulai);
+        })->values(); // reset keys agar jadi array numerik
 
         $now = now('Asia/Jakarta'); // Waktu sekarang untuk pengujian
         $now->addHour(); // Menambahkan satu jam ke waktu sekarang
@@ -927,11 +931,29 @@ class GuruController extends Controller
                 $hadirCount = $items->where('status', 'hadir')->count();
                 $persenKehadiran = round(($hadirCount / $siswaCount) * 100, 2);
 
+                // Tambahkan data siswa yang tidak hadir
+                $siswaAbsen = [];
+                foreach ($items as $absensi) {
+                    if ($absensi->status !== 'hadir') {
+                        $siswa = $absensi->siswa;
+                        if ($siswa) {
+                            $siswaAbsen[] = [
+                                'id' => $siswa->id_siswa,
+                                'nama' => $siswa->nama,
+                                'nis' => $siswa->nis,
+                                'status' => $absensi->status,
+                                'keterangan' => $absensi->catatan
+                            ];
+                        }
+                    }
+                }
+
                 return [
                     'tanggal' => $first->tanggal->toDateString(),
                     'topik' => optional($jadwal->mataPelajaran)->nama ?? 'Tidak diketahui',
                     'kehadiran' => $persenKehadiran,
                     'catatan' => $first->catatan ?? null,
+                    'siswa_tidak_hadir' => $siswaAbsen
                 ];
             })->values(); // ubah ke array numerik
 
