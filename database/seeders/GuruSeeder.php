@@ -13,24 +13,48 @@ class GuruSeeder extends Seeder
      */
     public function run(): void
     {
-        $guru = [];
-        
-        for ($i = 1; $i <= 30; $i++) {
-            $guru[] = [
-                'id_guru' => $i,
-                'id_user' => $i + 10, // User IDs 11-40 are teachers
-                'nama_lengkap' => 'Guru ' . $i,
-                'nip' => '1985' . str_pad($i, 6, '0', STR_PAD_LEFT),
-                'nomor_telepon' => '08' . rand(1000000000, 9999999999),
-                'bidang_studi' => ['Matematika', 'Bahasa Indonesia', 'Bahasa Inggris', 'IPA', 'IPS', 'Pendidikan Agama', 'PPKN', 'Seni Budaya', 'Pendidikan Jasmani', 'Prakarya'][$i % 10],
+        $guru = [
+            [
+                'id_guru' => 1,
+                'id_user' => 4,
+                'nama_lengkap' => 'Ahmad Wijaya',
+                'nip' => '198601202008011002',
+                'nomor_telepon' => '081234567891',
+                'bidang_studi' => 'Matematika',
                 'status' => 'aktif',
                 'dibuat_pada' => Carbon::now(),
                 'dibuat_oleh' => 'system',
                 'diperbarui_pada' => Carbon::now(),
                 'diperbarui_oleh' => 'system'
-            ];
-        }
-        
+            ],
+            [
+                'id_guru' => 2,
+                'id_user' => 5,
+                'nama_lengkap' => 'Dewi Susanti',
+                'nip' => '198703152009012003',
+                'nomor_telepon' => '081234567892',
+                'bidang_studi' => 'Bahasa Indonesia',
+                'status' => 'aktif',
+                'dibuat_pada' => Carbon::now(),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now(),
+                'diperbarui_oleh' => 'system'
+            ],
+            [
+                'id_guru' => 3,
+                'id_user' => 6,
+                'nama_lengkap' => 'Rini Wulandari',
+                'nip' => '198805102010012004',
+                'nomor_telepon' => '081234567893',
+                'bidang_studi' => 'IPA',
+                'status' => 'aktif',
+                'dibuat_pada' => Carbon::now(),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now(),
+                'diperbarui_oleh' => 'system'
+            ],
+        ];
+
         DB::table('guru')->insert($guru);
     }
 }

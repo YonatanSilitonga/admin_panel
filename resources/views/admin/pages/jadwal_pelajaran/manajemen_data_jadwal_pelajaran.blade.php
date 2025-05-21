@@ -13,6 +13,13 @@
             </header>
 
             <div class="data">
+                <!-- Tombol Tambah - Selalu muncul di luar kondisi -->
+                <div class="d-flex justify-content-end mb-3">
+                    <a href="{{ route('jadwal-pelajaran.create') }}" class="btn btn-success">
+                        <i class="bi bi-plus-circle me-1"></i> Tambah
+                    </a>
+                </div>
+                
                 <!-- Tampilan Jadwal -->
                 <div class="table-responsive">
                     @if($jadwalList->isEmpty())
@@ -21,28 +28,24 @@
                         </div>
                     @else
                         <!-- Tampilan Jadwal per Hari -->
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-    <ul class="nav nav-tabs" id="jadwalTab" role="tablist">
-        @foreach($hariList as $index => $hari)
-            <li class="nav-item" role="presentation">
-                <button class="nav-link {{ $index === 0 ? 'active' : '' }}" 
-                        id="{{ $hari }}-tab" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#{{ $hari }}-content" 
-                        type="button" 
-                        role="tab" 
-                        aria-controls="{{ $hari }}-content" 
-                        aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
-                    {{ ucfirst($hari) }}
-                </button>
-            </li>
-        @endforeach
-    </ul>
-    <a href="{{ route('jadwal-pelajaran.create') }}" class="btn btn-success ms-3">
-        <i class="bi bi-plus-circle me-1"></i> Tambah
-    </a>
-</div>
-
+                        <div class="d-flex justify-content-start align-items-center mb-4">
+                            <ul class="nav nav-tabs" id="jadwalTab" role="tablist">
+                                @foreach($hariList as $index => $hari)
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link {{ $index === 0 ? 'active' : '' }}" 
+                                                id="{{ $hari }}-tab" 
+                                                data-bs-toggle="tab" 
+                                                data-bs-target="#{{ $hari }}-content" 
+                                                type="button" 
+                                                role="tab" 
+                                                aria-controls="{{ $hari }}-content" 
+                                                aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
+                                            {{ ucfirst($hari) }}
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
 
                         <div class="tab-content" id="jadwalTabContent">
                             @foreach($hariList as $index => $hari)

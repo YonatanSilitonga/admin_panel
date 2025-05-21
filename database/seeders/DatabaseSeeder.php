@@ -24,9 +24,9 @@ class DatabaseSeeder extends Seeder
             SiswaSeeder::class,
             JadwalSeeder::class,
             AbsensiSeeder::class,
+            RekapAbsensiSeeder::class,
             SuratIzinSeeder::class,
             NotifikasiSeeder::class,
-            RekapAbsensiSeeder::class,
         ]);
     }
 }

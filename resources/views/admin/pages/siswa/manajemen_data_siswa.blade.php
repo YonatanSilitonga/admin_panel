@@ -18,7 +18,7 @@
     <form method="GET" action="{{ route('siswa.index') }}" class="d-flex align-items-center gap-3 flex-wrap">
         <div class="d-flex align-items-center gap-2">
             <label for="kelas" class="form-label form-label-sm me-2 mb-0">Kelas:</label>
-            <select name="kelas" id="kelas" class="form-select form-select-sm" style="min-width: 140px; max-width: 160px;">
+            <select name="kelas" id="kelas" class="form-select form-select" style="min-width: 140px; max-width: 160px;">
                 <option value="">Semua</option>
                 @foreach ($kelasList as $kelas)
                     <option value="{{ $kelas->id_kelas }}"
@@ -37,14 +37,14 @@
         
         <div class="d-flex align-items-center gap-2">
             <label for="status" class="me-2 mb-0">Status:</label>
-            <select name="status" id="status" class="form-select form-select-sm" style="min-width: 140px; max-width: 160px;">
+            <select name="status" id="status" class="form-select form-select" style="min-width: 140px; max-width: 160px;">
                 <option value="semua" {{ request('status') == 'semua' ? 'selected' : '' }}>Semua Status</option>
                 <option value="aktif" {{ (request('status') == 'aktif' || (!request()->has('status'))) ? 'selected' : '' }}>Aktif</option>
                 <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
             </select>
         </div>
         
-        <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari nama/NIS..." 
+        <input type="text" name="search" class="form-control form-control" placeholder="Cari nama/NIS..." 
             value="{{ request('search') }}" style="width: 230px; min-width: 180px;">
         
         <button type="submit" class="btn btn-outline-success d-flex align-items-center gap-2">
@@ -127,10 +127,10 @@
                         </td>
                         <td class="text-center">
                             <div class="d-flex justify-content-center gap-2">
-                                <a href="javascript:void(0);" class="text-primary btn-view-siswa"
+                                <!-- <a href="javascript:void(0);" class="text-primary btn-view-siswa"
                                     data-id="{{ $siswa->id_siswa }}" title="Lihat">
                                     <i class="bi bi-eye-fill fs-5"></i>
-                                </a>
+                                </a> -->
                                 <a href="{{ url('siswa/' . $siswa->id_siswa . '/edit') }}" class="text-warning" title="Edit">
                                     <i class="bi bi-pencil-square fs-5"></i>
                                 </a>

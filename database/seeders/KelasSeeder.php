@@ -13,34 +13,42 @@ class KelasSeeder extends Seeder
      */
     public function run(): void
     {
-        $kelas = [];
-        $id = 1;
-        
-        $tingkat = ['7', '8', '9'];
-        $nama = ['A', 'B', 'C', 'D'];
-        
-        // Get active tahun ajaran
-        $tahunAjaranAktif = DB::table('tahun_ajaran')->where('aktif', 1)->first();
-        $idTahunAjaran = $tahunAjaranAktif ? $tahunAjaranAktif->id_tahun_ajaran : 1;
-        
-        foreach ($tingkat as $t) {
-            foreach ($nama as $n) {
-                $walikelas = rand(1, 30); // Random teacher as homeroom teacher
-                
-                $kelas[] = [
-                    'id_kelas' => $id++,
-                    'nama_kelas' => $t . $n,
-                    'tingkat' => $t,
-                    'id_guru' => $walikelas,
-                    'id_tahun_ajaran' => $idTahunAjaran,
-                    'dibuat_pada' => Carbon::now(),
-                    'dibuat_oleh' => 'system',
-                    'diperbarui_pada' => Carbon::now(),
-                    'diperbarui_oleh' => 'system'
-                ];
-            }
-        }
-        
+        $kelas = [
+            [
+                'id_kelas' => 1,
+                'nama_kelas' => '7A',
+                'tingkat' => '7',
+                'id_guru' => 1,
+                'id_tahun_ajaran' => 1,
+                'dibuat_pada' => Carbon::now(),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now(),
+                'diperbarui_oleh' => 'system'
+            ],
+            [
+                'id_kelas' => 2,
+                'nama_kelas' => '7B',
+                'tingkat' => '7',
+                'id_guru' => 2,
+                'id_tahun_ajaran' => 1,
+                'dibuat_pada' => Carbon::now(),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now(),
+                'diperbarui_oleh' => 'system'
+            ],
+            [
+                'id_kelas' => 3,
+                'nama_kelas' => '8A',
+                'tingkat' => '8',
+                'id_guru' => 3,
+                'id_tahun_ajaran' => 1,
+                'dibuat_pada' => Carbon::now(),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now(),
+                'diperbarui_oleh' => 'system'
+            ],
+        ];
+
         DB::table('kelas')->insert($kelas);
     }
 }

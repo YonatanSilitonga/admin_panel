@@ -41,13 +41,13 @@
         <thead class="bg-success text-white">
             <tr>
                 <th width="5%" class="text-center">No</th>
-                <th width="20%">Nama Tahun Ajaran</th>
+                <th width="25%">Nama Tahun Ajaran</th>
                 <th width="15%">Tanggal Mulai</th>
                 <th width="15%">Tanggal Selesai</th>
                 <th width="10%">Status</th>
                 <th width="10%">Jumlah Kelas</th>
                 <th width="10%">Jumlah Siswa</th>
-                <th width="15%" class="text-center">Aksi</th>
+                <th width="10%" class="text-center">Aksi</th>
             </tr>
         </thead>
         <tbody>

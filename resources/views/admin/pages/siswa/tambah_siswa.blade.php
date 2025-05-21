@@ -47,7 +47,7 @@
                             <!-- NIS -->
                             <div class="col-md-6 mb-3">
                                 <label for="nis" class="form-label">NIS</label>
-                                <input type="text" name="nis" id="nis"
+                                <input type="number" name="nis" id="nis"
                                     class="form-control @error('nis') is-invalid @enderror" value="{{ old('nis') }}"
                                     required>
                                 @error('nis')
@@ -102,6 +102,17 @@
                                 @enderror
                             </div>
 
+                            <!-- Tempat lahir  -->
+                                                         <div class="col-md-6 mb-3">
+                                <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
+                                <input type="text" name="tempat_lahir" id="tempat"
+                                    class="form-control @error('tempat_lahir') is-invalid @enderror" 
+                                    value="{{ old('tempat_lahir') }}">
+                                @error('tempat_lahir')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            
                             <!-- Tanggal Lahir -->
                             <div class="col-md-6 mb-3">
                                 <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>

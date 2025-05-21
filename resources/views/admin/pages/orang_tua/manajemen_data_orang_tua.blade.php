@@ -17,7 +17,7 @@
                         <form method="GET" action="{{ route('orang-tua.index') }}" class="d-flex align-items-center gap-3 flex-wrap">
                             <div class="d-flex align-items-center gap-1">
                                 <label for="kelas" class="form-label form-label-sm me-1 mb-0">Kelas:</label>
-                                <select name="kelas" id="kelas" class="form-select form-select-sm">
+                                <select name="kelas" id="kelas" class="form-select form-select">
                                     <option value="">Semua</option>
                                     @foreach ($kelasList as $kelas)
                                         <option value="{{ $kelas->id_kelas }}" {{ request('kelas') == $kelas->id_kelas ? 'selected' : '' }}>
@@ -68,8 +68,14 @@
                         </a>
                         </div>
                     </div>
-<!-- Tabel Data Orang Tua -->
+            
+                    <!-- Tabel Data Orang Tua -->
 <h5 class="mb-3">Daftar Orang Tua / Wali Murid</h5>
+@if($orangTuaList->isEmpty())
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i> Tidak ada data orangtua.
+    </div>
+@else
 <div class="table-responsive">
     <table id="orangtuaTable" class="table table-striped table-bordered table-sm" >
         <thead class="bg-success text-white">
@@ -133,6 +139,7 @@
         </tbody>
     </table>
 </div>
+@endif
 
 
     <!-- Modal View Orang Tua -->

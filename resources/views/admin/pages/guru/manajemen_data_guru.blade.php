@@ -17,15 +17,16 @@
     <form method="GET" action="{{ route('guru.index') }}" class="d-flex align-items-center gap-3 flex-wrap">
         <div class="d-flex align-items-center gap-1">
             <label for="mata_pelajaran" class="form-label me-1 mb-0">Mapel:</label>
-            <select name="mata_pelajaran" id="mata_pelajaran" class="form-select">
-                <option value="">Semua</option>
-                @foreach ($mataPelajaranList as $mapel)
-                    <option value="{{ $mapel->id_mata_pelajaran }}"
-                        {{ request('mata_pelajaran') == $mapel->id_mata_pelajaran ? 'selected' : '' }}>
-                        {{ $mapel->nama }}
-                    </option>
-                @endforeach
-            </select>
+<select name="mata_pelajaran" id="mata_pelajaran" class="form-select" style="width: 150px;">
+    <option value="">Semua</option>
+    @foreach ($mataPelajaranList as $mapel)
+        <option value="{{ $mapel->id_mata_pelajaran }}"
+            {{ request('mata_pelajaran') == $mapel->id_mata_pelajaran ? 'selected' : '' }}>
+            {{ $mapel->nama }}
+        </option>
+    @endforeach
+</select>
+
         </div>
 
         <div class="d-flex align-items-center gap-2">
@@ -72,13 +73,13 @@
 <!-- Tabel Data Guru -->
 <h5 class="mb-3">Daftar Guru Pengajar</h5>
 <div class="table-responsive">
-    <table class="table table-striped table-bordered table-sm">
+    <table id="guruTable" class="table table-striped table-bordered table-sm">
         <thead class="bg-success text-white">
             <tr>
-                <th class="text-center" style="min-width: 40px;">No</th>
-                <th style="min-width: 150px;">Nama Lengkap</th>
-                <th style="min-width: 120px;">NIP</th>
-                <th style="min-width: 180px;">Mata Pelajaran</th>
+                <th class="text-center" style="min-width: 20px;">No</th>
+                <th style="min-width: 100px;">Nama Lengkap</th>
+                <th style="min-width: 100px;">NIP</th>
+                <th style="min-width: 250px;">Mata Pelajaran</th>
                 <th class="text-center" style="min-width: 100px;">Status</th>
                 <th class="text-center" style="min-width: 100px;">Aksi</th>
             </tr>

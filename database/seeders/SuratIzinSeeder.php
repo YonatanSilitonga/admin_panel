@@ -13,66 +13,54 @@ class SuratIzinSeeder extends Seeder
      */
     public function run(): void
     {
-        $suratIzin = [];
-        $id = 1;
-        
-        // Get all students
-        $allSiswa = DB::table('siswa')->get();
-        
-        // Generate permission letters for April and May 2025
-        $months = [4, 5]; // April and May
-        $year = 2025;
-        
-        $alasanIzin = [
-            'Sakit',
-            'Acara Keluarga',
-            'Pemeriksaan Kesehatan',
-            'Kegiatan Lomba',
-            'Kegiatan Keagamaan',
-            'Urusan Pribadi',
-            'Musibah Keluarga',
-            'Kegiatan Ekstrakurikuler',
-            'Perjalanan Keluarga',
-            'Lainnya'
+        $suratIzin = [
+            [
+                'id_surat_izin' => 1,
+                'id_siswa' => 1,
+                'id_orangtua' => 1,
+                'jenis' => 'sakit',
+                'tanggal_mulai' => '2025-05-05',
+                'tanggal_selesai' => '2025-05-06',
+                'alasan' => 'Sakit demam dan flu',
+                'file_lampiran' => 'surat_dokter_1.pdf',
+                'status' => 'disetujui',
+                'dibuat_pada' => Carbon::now()->subDays(5),
+                'dibuat_oleh' => 'Budi Santoso',
+                'diperbarui_pada' => Carbon::now()->subDays(4),
+                'diperbarui_oleh' => 'Ahmad Wijaya'
+            ],
+            [
+                'id_surat_izin' => 2,
+                'id_siswa' => 2,
+                'id_orangtua' => 1,
+                'jenis' => 'izin',
+                'tanggal_mulai' => '2025-05-10',
+                'tanggal_selesai' => '2025-05-10',
+                'alasan' => 'Acara keluarga',
+                'file_lampiran' => null,
+                'status' => 'disetujui',
+                'dibuat_pada' => Carbon::now()->subDays(3),
+                'dibuat_oleh' => 'Budi Santoso',
+                'diperbarui_pada' => Carbon::now()->subDays(2),
+                'diperbarui_oleh' => 'Ahmad Wijaya'
+            ],
+            [
+                'id_surat_izin' => 3,
+                'id_siswa' => 3,
+                'id_orangtua' => 2,
+                'jenis' => 'sakit',
+                'tanggal_mulai' => '2025-05-15',
+                'tanggal_selesai' => '2025-05-17',
+                'alasan' => 'Sakit perut',
+                'file_lampiran' => 'surat_dokter_2.pdf',
+                'status' => 'menunggu',
+                'dibuat_pada' => Carbon::now()->subDay(),
+                'dibuat_oleh' => 'Siti Rahayu',
+                'diperbarui_pada' => Carbon::now()->subDay(),
+                'diperbarui_oleh' => 'Siti Rahayu'
+            ],
         ];
-        
-        // For each student, create 0-2 permission letters
-        foreach ($allSiswa as $siswa) {
-            $numLetters = rand(0, 2);
-            
-            for ($i = 0; $i < $numLetters; $i++) {
-                $month = $months[array_rand($months)];
-                $daysInMonth = Carbon::createFromDate($year, $month, 1)->daysInMonth;
-                $day = rand(1, $daysInMonth);
-                $date = Carbon::createFromDate($year, $month, $day);
-                
-                // Skip weekends
-                if ($date->isWeekend()) {
-                    continue;
-                }
-                
-                $durationDays = rand(1, 3);
-                $jenis = rand(0, 1) ? 'sakit' : 'izin';
-                $alasan = $alasanIzin[array_rand($alasanIzin)];
-                
-                $suratIzin[] = [
-                    'id_surat_izin' => $id++,
-                    'id_siswa' => $siswa->id_siswa,
-                    'id_orangtua' => $siswa->id_orangtua,
-                    'jenis' => $jenis,
-                    'tanggal_mulai' => $date->format('Y-m-d'),
-                    'tanggal_selesai' => $date->copy()->addDays($durationDays - 1)->format('Y-m-d'),
-                    'alasan' => $alasan,
-                    'file_lampiran' => null,
-                    'status' => ['menunggu', 'disetujui', 'ditolak'][rand(0, 2)],
-                    'dibuat_pada' => Carbon::now(),
-                    'dibuat_oleh' => 'system',
-                    'diperbarui_pada' => Carbon::now(),
-                    'diperbarui_oleh' => 'system'
-                ];
-            }
-        }
-        
+
         DB::table('surat_izin')->insert($suratIzin);
     }
 }

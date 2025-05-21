@@ -35,8 +35,8 @@
                 <tr>
                     <th width="5%" class="text-center">No</th>
                     <th width="25%">Nama</th>
-                    <th width="20%">Kode</th>
-                    <th width="35%">Deskripsi</th>
+                    <th width="10%">Kode</th>
+                    <th width="45%">Deskripsi</th>
                     <th width="15%" class="text-center">Aksi</th>
                 </tr>
             </thead>

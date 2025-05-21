@@ -13,56 +13,69 @@ class RekapAbsensiSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get all students
-        $siswas = DB::table('siswa')->get();
-        
-        $rekap = [];
-        $id = 1;
-        
-        // Buat rekap untuk bulan April dan Mei 2025
-        foreach (['04', '05'] as $bulan) {
-            foreach ($siswas as $siswa) {
-                // Hitung jumlah kehadiran berdasarkan data absensi
-                $absensi = DB::table('absensi')
-                    ->join('jadwal', 'absensi.id_jadwal', '=', 'jadwal.id_jadwal')
-                    ->where('absensi.id_siswa', $siswa->id_siswa)
-                    ->where('jadwal.id_kelas', $siswa->id_kelas)
-                    ->whereRaw("DATE_FORMAT(absensi.tanggal, '%m') = ?", [$bulan])
-                    ->whereRaw("DATE_FORMAT(absensi.tanggal, '%Y') = ?", ['2025'])
-                    ->select('absensi.status')
-                    ->get();
-                
-                $jumlahHadir = $absensi->where('status', 'hadir')->count();
-                $jumlahSakit = $absensi->where('status', 'sakit')->count();
-                $jumlahIzin = $absensi->where('status', 'izin')->count();
-                $jumlahAlpa = $absensi->where('status', 'alpa')->count();
-                
-                $rekap[] = [
-                    'id_rekap' => $id++,
-                    'id_siswa' => $siswa->id_siswa,
-                    'id_kelas' => $siswa->id_kelas,
-                    'bulan' => $bulan,
-                    'tahun' => 2025,
-                    'jumlah_hadir' => $jumlahHadir,
-                    'jumlah_sakit' => $jumlahSakit,
-                    'jumlah_izin' => $jumlahIzin,
-                    'jumlah_alpa' => $jumlahAlpa,
-                    'dibuat_pada' => Carbon::now(),
-                    'dibuat_oleh' => 'system',
-                    'diperbarui_pada' => Carbon::now(),
-                    'diperbarui_oleh' => 'system'
-                ];
-                
-                // To prevent the data from being too large, we'll limit the number of records
-                if ($id > 1000) {
-                    break 2; // Break out of both loops
-                }
-            }
-        }
-        
-        // Insert in chunks to avoid memory issues
-        foreach (array_chunk($rekap, 100) as $chunk) {
-            DB::table('rekap_absensi')->insert($chunk);
-        }
+        $rekapAbsensi = [
+            [
+                'id_rekap' => 1,
+                'id_siswa' => 1,
+                'id_kelas' => 1,
+                'bulan' => '05',
+                'tahun' => 2025,
+                'jumlah_hadir' => 18,
+                'jumlah_sakit' => 2,
+                'jumlah_izin' => 0,
+                'jumlah_alpa' => 0,
+                'dibuat_pada' => Carbon::now(),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now(),
+                'diperbarui_oleh' => 'system'
+            ],
+            [
+                'id_rekap' => 2,
+                'id_siswa' => 2,
+                'id_kelas' => 1,
+                'bulan' => '05',
+                'tahun' => 2025,
+                'jumlah_hadir' => 17,
+                'jumlah_sakit' => 0,
+                'jumlah_izin' => 3,
+                'jumlah_alpa' => 0,
+                'dibuat_pada' => Carbon::now(),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now(),
+                'diperbarui_oleh' => 'system'
+            ],
+            [
+                'id_rekap' => 3,
+                'id_siswa' => 3,
+                'id_kelas' => 2,
+                'bulan' => '05',
+                'tahun' => 2025,
+                'jumlah_hadir' => 19,
+                'jumlah_sakit' => 0,
+                'jumlah_izin' => 0,
+                'jumlah_alpa' => 1,
+                'dibuat_pada' => Carbon::now(),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now(),
+                'diperbarui_oleh' => 'system'
+            ],
+            [
+                'id_rekap' => 4,
+                'id_siswa' => 4,
+                'id_kelas' => 3,
+                'bulan' => '05',
+                'tahun' => 2025,
+                'jumlah_hadir' => 20,
+                'jumlah_sakit' => 0,
+                'jumlah_izin' => 0,
+                'jumlah_alpa' => 0,
+                'dibuat_pada' => Carbon::now(),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now(),
+                'diperbarui_oleh' => 'system'
+            ],
+        ];
+
+        DB::table('rekap_absensi')->insert($rekapAbsensi);
     }
 }

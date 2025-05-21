@@ -13,59 +13,74 @@ class NotifikasiSeeder extends Seeder
      */
     public function run(): void
     {
-        $notifikasi = [];
-        $id = 1;
-        
-        // Get all users
-        $allUsers = DB::table('users')->get();
-        
-        $jenisNotifikasi = [
-            'Absensi' => 'Notifikasi terkait absensi siswa',
-            'Surat Izin' => 'Notifikasi terkait surat izin',
-            'Pengumuman' => 'Pengumuman penting dari sekolah',
-            'Jadwal' => 'Perubahan jadwal pelajaran',
-            'Nilai' => 'Notifikasi terkait nilai siswa',
-            'Kegiatan' => 'Informasi kegiatan sekolah',
-            'Tagihan' => 'Informasi tagihan pembayaran',
-            'Lainnya' => 'Notifikasi lainnya'
+        $notifikasi = [
+            [
+                'id_notifikasi' => 1,
+                'id_user' => 1,
+                'judul' => 'Selamat Datang',
+                'pesan' => 'Selamat datang di sistem absensi sekolah.',
+                'tipe' => 'info',
+                'dibaca' => 1,
+                'waktu_dibaca' => Carbon::now()->subDays(5),
+                'dibuat_pada' => Carbon::now()->subDays(6),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now()->subDays(5),
+                'diperbarui_oleh' => 'system'
+            ],
+            [
+                'id_notifikasi' => 2,
+                'id_user' => 2,
+                'judul' => 'Surat Izin Disetujui',
+                'pesan' => 'Surat izin untuk Andi Pratama telah disetujui.',
+                'tipe' => 'success',
+                'dibaca' => 1,
+                'waktu_dibaca' => Carbon::now()->subDays(3),
+                'dibuat_pada' => Carbon::now()->subDays(4),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now()->subDays(3),
+                'diperbarui_oleh' => 'system'
+            ],
+            [
+                'id_notifikasi' => 3,
+                'id_user' => 3,
+                'judul' => 'Surat Izin Menunggu Persetujuan',
+                'pesan' => 'Surat izin untuk Rizki Ramadhan sedang menunggu persetujuan.',
+                'tipe' => 'warning',
+                'dibaca' => 0,
+                'waktu_dibaca' => null,
+                'dibuat_pada' => Carbon::now()->subDay(),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now()->subDay(),
+                'diperbarui_oleh' => 'system'
+            ],
+            [
+                'id_notifikasi' => 4,
+                'id_user' => 4,
+                'judul' => 'Jadwal Mengajar Baru',
+                'pesan' => 'Anda memiliki jadwal mengajar baru untuk kelas 7A pada hari Senin.',
+                'tipe' => 'info',
+                'dibaca' => 1,
+                'waktu_dibaca' => Carbon::now()->subDays(2),
+                'dibuat_pada' => Carbon::now()->subDays(3),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now()->subDays(2),
+                'diperbarui_oleh' => 'system'
+            ],
+            [
+                'id_notifikasi' => 5,
+                'id_user' => 5,
+                'judul' => 'Pengumuman Rapat Guru',
+                'pesan' => 'Rapat guru akan diadakan pada tanggal 25 Mei 2025 pukul 14:00.',
+                'tipe' => 'info',
+                'dibaca' => 0,
+                'waktu_dibaca' => null,
+                'dibuat_pada' => Carbon::now(),
+                'dibuat_oleh' => 'system',
+                'diperbarui_pada' => Carbon::now(),
+                'diperbarui_oleh' => 'system'
+            ],
         ];
-        
-        // Generate notifications for April and May 2025
-        $months = [4, 5]; // April and May
-        $year = 2025;
-        
-        // For each user, create 5-10 notifications
-        foreach ($allUsers as $user) {
-            $numNotifications = rand(5, 10);
-            
-            for ($i = 0; $i < $numNotifications; $i++) {
-                $month = $months[array_rand($months)];
-                $daysInMonth = Carbon::createFromDate($year, $month, 1)->daysInMonth;
-                $day = rand(1, $daysInMonth);
-                $date = Carbon::createFromDate($year, $month, $day);
-                
-                $jenis = array_rand($jenisNotifikasi);
-                $pesan = $jenisNotifikasi[$jenis];
-                
-                $notifikasi[] = [
-                    'id_notifikasi' => $id++,
-                    'id_user' => $user->id_user,
-                    'judul' => $jenis . ' - ' . substr(md5(rand()), 0, 8),
-                    'pesan' => $pesan . ' - ' . substr(md5(rand()), 0, 16),
-                    'tipe' => ['info', 'warning', 'success', 'danger'][rand(0, 3)],
-                    'dibaca' => rand(0, 1),
-                    'waktu_dibaca' => rand(0, 1) ? Carbon::now() : null,
-                    'dibuat_pada' => Carbon::now(),
-                    'dibuat_oleh' => 'system',
-                    'diperbarui_pada' => Carbon::now(),
-                    'diperbarui_oleh' => 'system'
-                ];
-            }
-        }
-        
-        // Insert in chunks to avoid memory issues
-        foreach (array_chunk($notifikasi, 1000) as $chunk) {
-            DB::table('notifikasi')->insert($chunk);
-        }
+
+        DB::table('notifikasi')->insert($notifikasi);
     }
 }

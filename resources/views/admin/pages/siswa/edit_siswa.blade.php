@@ -120,6 +120,24 @@
                                 @enderror
                             </div>
 
+                            <!-- Tempat Lahir -->
+<div class="col-md-6 mb-3">
+    <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
+    <input
+        type="text"
+        name="tempat_lahir"
+        id="tempat_lahir"
+        class="form-control @error('tempat_lahir') is-invalid @enderror"
+        value="{{ old('tempat_lahir', $siswa->tempat_lahir) }}"
+    >
+    @error('tempat_lahir')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+    @enderror
+</div>
+
+
                             <!-- Tanggal Lahir -->
                             <div class="col-md-6 mb-3">
                                 <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>

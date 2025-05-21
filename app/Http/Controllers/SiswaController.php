@@ -97,8 +97,9 @@ class SiswaController extends Controller
            'nis' => 'required|string|max:20|unique:siswa,nis',
            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
            'id_kelas' => 'required|exists:kelas,id_kelas',
-           'alamat' => 'nullable|string',
-           'tanggal_lahir' => 'nullable|date',
+           'tempat_lahir' => 'required|string',
+           'alamat' => 'required|string',
+           'tanggal_lahir' => 'required|date',
            'id_orangtua' => 'required|exists:orangtua,id_orangtua',
        ]);
 
@@ -120,6 +121,7 @@ class SiswaController extends Controller
            $siswa->jenis_kelamin = $request->jenis_kelamin;
            $siswa->id_kelas = $request->id_kelas;
            $siswa->alamat = $request->alamat;
+           $siswa->tempat_lahir = $request->tempat_lahir;
            $siswa->tanggal_lahir = $request->tanggal_lahir;
            $siswa->id_orangtua = $request->id_orangtua;
            
@@ -238,8 +240,9 @@ class SiswaController extends Controller
            'nis' => 'required|string|max:20|unique:siswa,nis,' . $id . ',id_siswa',
            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
            'id_kelas' => 'required|exists:kelas,id_kelas',
-           'alamat' => 'nullable|string',
-           'tanggal_lahir' => 'nullable|date',
+           'alamat' => 'string',
+           'tempat_lahir' => 'string',
+           'tanggal_lahir' => 'date',
            'id_orangtua' => 'required|exists:orangtua,id_orangtua',
        ]);
 
@@ -262,6 +265,7 @@ class SiswaController extends Controller
                'jenis_kelamin' => $request->jenis_kelamin,
                'id_kelas' => $request->id_kelas,
                'alamat' => $request->alamat,
+               'tempat_lahir' => $request->tempat_lahir,
                'tanggal_lahir' => $request->tanggal_lahir,
                'id_orangtua' => $request->id_orangtua,
                'diperbarui_pada' => now(),

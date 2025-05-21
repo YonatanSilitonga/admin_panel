@@ -13,98 +13,106 @@ class AbsensiSeeder extends Seeder
      */
     public function run(): void
     {
+        $tanggalMulai = Carbon::create(2025, 5, 1);
         $absensi = [];
-        $id = 1;
-        
-        // Get all students
-        $allSiswa = DB::table('siswa')->get();
-        
-        // Get all schedules
-        $allJadwal = DB::table('jadwal')->get();
-        
-        // Group schedules by class
-        $jadwalByKelas = [];
-        foreach ($allJadwal as $jadwal) {
-            if (!isset($jadwalByKelas[$jadwal->id_kelas])) {
-                $jadwalByKelas[$jadwal->id_kelas] = [];
-            }
-            $jadwalByKelas[$jadwal->id_kelas][] = $jadwal;
-        }
-        
-        // Generate attendance for April and May 2025
-        $months = [4, 5]; // April and May
-        $year = 2025;
-        
-        foreach ($months as $month) {
-            $daysInMonth = Carbon::createFromDate($year, $month, 1)->daysInMonth;
+        $counter = 1;
+
+        // Generate absensi untuk 2 minggu terakhir
+        for ($i = 0; $i < 10; $i++) {
+            $tanggal = $tanggalMulai->copy()->addDays($i);
             
-            // For each day in the month
-            for ($day = 1; $day <= $daysInMonth; $day++) {
-                $date = Carbon::createFromDate($year, $month, $day);
-                
-                // Skip weekends
-                if ($date->isWeekend()) {
-                    continue;
+            // Skip hari Sabtu dan Minggu
+            if ($tanggal->dayOfWeek == Carbon::SATURDAY || $tanggal->dayOfWeek == Carbon::SUNDAY) {
+                continue;
+            }
+            
+            // Konversi hari ke format database
+            $hariIndonesia = '';
+            switch ($tanggal->dayOfWeek) {
+                case Carbon::MONDAY:
+                    $hariIndonesia = 'senin';
+                    break;
+                case Carbon::TUESDAY:
+                    $hariIndonesia = 'selasa';
+                    break;
+                case Carbon::WEDNESDAY:
+                    $hariIndonesia = 'rabu';
+                    break;
+                case Carbon::THURSDAY:
+                    $hariIndonesia = 'kamis';
+                    break;
+                case Carbon::FRIDAY:
+                    $hariIndonesia = 'jumat';
+                    break;
+            }
+            
+            // Ambil jadwal untuk hari ini
+            for ($jadwalId = 1; $jadwalId <= 5; $jadwalId++) {
+                // Siswa 1 dan 2 di kelas 1
+                if ($jadwalId <= 3) {
+                    // Siswa 1
+                    $absensi[] = [
+                        'id_absensi' => $counter++,
+                        'id_siswa' => 1,
+                        'id_jadwal' => $jadwalId,
+                        'tanggal' => $tanggal->format('Y-m-d'),
+                        'status' => $i % 5 == 0 ? 'sakit' : 'hadir',
+                        'catatan' => $i % 5 == 0 ? 'Sakit flu' : null,
+                        'dibuat_pada' => Carbon::now(),
+                        'dibuat_oleh' => 'system',
+                        'diperbarui_pada' => Carbon::now(),
+                        'diperbarui_oleh' => 'system'
+                    ];
+                    
+                    // Siswa 2
+                    $absensi[] = [
+                        'id_absensi' => $counter++,
+                        'id_siswa' => 2,
+                        'id_jadwal' => $jadwalId,
+                        'tanggal' => $tanggal->format('Y-m-d'),
+                        'status' => $i % 7 == 0 ? 'izin' : 'hadir',
+                        'catatan' => $i % 7 == 0 ? 'Izin keluarga' : null,
+                        'dibuat_pada' => Carbon::now(),
+                        'dibuat_oleh' => 'system',
+                        'diperbarui_pada' => Carbon::now(),
+                        'diperbarui_oleh' => 'system'
+                    ];
                 }
                 
-                $dayName = strtolower($date->locale('id')->dayName);
-                $dayNameIndonesian = [
-                    'monday' => 'senin',
-                    'tuesday' => 'selasa',
-                    'wednesday' => 'rabu',
-                    'thursday' => 'kamis',
-                    'friday' => 'jumat',
-                ][$dayName] ?? $dayName;
+                // Siswa 3 di kelas 2
+                if ($jadwalId == 4) {
+                    $absensi[] = [
+                        'id_absensi' => $counter++,
+                        'id_siswa' => 3,
+                        'id_jadwal' => $jadwalId,
+                        'tanggal' => $tanggal->format('Y-m-d'),
+                        'status' => $i % 8 == 0 ? 'alpa' : 'hadir',
+                        'catatan' => $i % 8 == 0 ? 'Tidak ada keterangan' : null,
+                        'dibuat_pada' => Carbon::now(),
+                        'dibuat_oleh' => 'system',
+                        'diperbarui_pada' => Carbon::now(),
+                        'diperbarui_oleh' => 'system'
+                    ];
+                }
                 
-                // For each student
-                foreach ($allSiswa as $siswa) {
-                    // Get schedules for this student's class and day
-                    $jadwalHariIni = array_filter($jadwalByKelas[$siswa->id_kelas] ?? [], function($j) use ($dayNameIndonesian) {
-                        return $j->hari === $dayNameIndonesian;
-                    });
-                    
-                    if (empty($jadwalHariIni)) {
-                        continue;
-                    }
-                    
-                    foreach ($jadwalHariIni as $jadwal) {
-                        // Determine attendance status (mostly present, sometimes absent)
-                        $randomStatus = rand(1, 100);
-                        if ($randomStatus <= 90) {
-                            $status = 'hadir';
-                        } elseif ($randomStatus <= 95) {
-                            $status = 'sakit';
-                        } elseif ($randomStatus <= 98) {
-                            $status = 'izin';
-                        } else {
-                            $status = 'alpa';
-                        }
-                        
-                        $absensi[] = [
-                            'id_absensi' => $id++,
-                            'id_siswa' => $siswa->id_siswa,
-                            'id_jadwal' => $jadwal->id_jadwal,
-                            'tanggal' => $date->format('Y-m-d'),
-                            'status' => $status,
-                            'catatan' => $status == 'hadir' ? null : 'Catatan untuk ' . $status,
-                            'dibuat_pada' => Carbon::now(),
-                            'dibuat_oleh' => 'system',
-                            'diperbarui_pada' => Carbon::now(),
-                            'diperbarui_oleh' => 'system'
-                        ];
-                        
-                        // To prevent the data from being too large, we'll limit the number of records
-                        if ($id > 50000) {
-                            break 4; // Break out of all loops
-                        }
-                    }
+                // Siswa 4 di kelas 3
+                if ($jadwalId == 5) {
+                    $absensi[] = [
+                        'id_absensi' => $counter++,
+                        'id_siswa' => 4,
+                        'id_jadwal' => $jadwalId,
+                        'tanggal' => $tanggal->format('Y-m-d'),
+                        'status' => 'hadir',
+                        'catatan' => null,
+                        'dibuat_pada' => Carbon::now(),
+                        'dibuat_oleh' => 'system',
+                        'diperbarui_pada' => Carbon::now(),
+                        'diperbarui_oleh' => 'system'
+                    ];
                 }
             }
         }
-        
-        // Insert in chunks to avoid memory issues
-        foreach (array_chunk($absensi, 1000) as $chunk) {
-            DB::table('absensi')->insert($chunk);
-        }
+
+        DB::table('absensi')->insert($absensi);
     }
 }
