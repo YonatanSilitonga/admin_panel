@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Guru;
-use App\Models\Orangtua;
+use App\Models\OrangTua;
 use App\Models\Staf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -125,7 +125,7 @@ class AuthController extends Controller
                     $profile = Guru::where('id_user', $user->id_user)->first();
                     break;
                 case 'orangtua':
-                    $profile = Orangtua::where('id_user', $user->id_user)->first();
+                    $profile = OrangTua::where('id_user', $user->id_user)->first();
                     break;
                 case 'staf':
                     $profile = Staf::where('id_user', $user->id_user)->first();

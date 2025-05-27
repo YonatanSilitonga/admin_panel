@@ -447,7 +447,7 @@ class GuruController extends Controller
             foreach ($kelas->siswa as $siswa) {
                 foreach ($siswa->suratIzin as $izin) {
                     $notifikasi[] = [
-                        'id_surat' => $izin->id_surat_izin, // <-- Tambahkan baris ini
+                        'id_surat' => $izin->id_surat_izin,
                         'nama_siswa' => $siswa->nama,
                         'jenis' => $izin->jenis,
                         'tanggal_mulai' => Carbon::parse($izin->tanggal_mulai)->format('Y-m-d H:i:s'),
@@ -455,18 +455,28 @@ class GuruController extends Controller
                         'alasan' => $izin->alasan,
                         'status' => $izin->status,
                         'dibuat_pada' => Carbon::parse($izin->dibuat_pada)->format('Y-m-d H:i:s'),
+                        'diperbarui_pada' => $izin->updated_at ? Carbon::parse($izin->updated_at)->format('Y-m-d H:i:s') : null,
+                        // Field file_lampiran yang dibutuhkan oleh Flutter
+                        'file_lampiran' => $izin->file_lampiran ?? null,
                     ];
                 }
             }
         }
 
+        // Sort berdasarkan tanggal terbaru (opsional, karena Flutter juga melakukan sorting)
+        usort($notifikasi, function ($a, $b) {
+            return strtotime($b['dibuat_pada']) - strtotime($a['dibuat_pada']);
+        });
+
         return response()->json([
             'success' => true,
             'message' => 'Notifikasi surat izin berhasil diambil.',
-            'data' => ['data' => $notifikasi]
+            'data' => [
+                'data' => $notifikasi,
+                'next_page_url' => null // Untuk kompatibilitas dengan pagination di Flutter
+            ]
         ]);
     }
-
     public function jadwalMingguan($id)
     {
         try {

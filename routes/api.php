@@ -8,7 +8,7 @@ use App\Http\Controllers\API\JadwalController;
 use App\Http\Controllers\API\KelasController;
 use App\Http\Controllers\API\MataPelajaranController;
 use App\Http\Controllers\API\NotifikasiController;
-use App\Http\Controllers\API\OrangtuaController;
+use App\Http\Controllers\API\OrangTuaController;
 use App\Http\Controllers\API\RekapAbsensiController;
 use App\Http\Controllers\API\SiswaController;
 use App\Http\Controllers\API\StafController;
