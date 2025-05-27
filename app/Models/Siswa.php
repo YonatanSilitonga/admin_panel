@@ -90,7 +90,6 @@ class Siswa extends Model
         return $this->belongsTo(Kelas::class, 'id_kelas', 'id_kelas');
     }
 
-    
     /**
      * Get the parent of the student.
      */
@@ -138,25 +137,23 @@ class Siswa extends Model
         // Get the class's academic year
         $tahunAjaran = $this->kelas->tahunAjaran;
         
-        // If the academic year is active, student is active
-        if ($tahunAjaran && $tahunAjaran->aktif) {
-            $this->status = self::STATUS_ACTIVE;
-        } else {
-            $this->status = self::STATUS_INACTIVE;
-        }
+        // Determine new status based on academic year
+        $newStatus = ($tahunAjaran && $tahunAjaran->aktif) 
+            ? self::STATUS_ACTIVE 
+            : self::STATUS_INACTIVE;
         
-        // Update the tahun_ajaran_id to match the class's academic year
-        if ($tahunAjaran) {
-            $this->id_tahun_ajaran = $tahunAjaran->id_tahun_ajaran;
-        }
-        
-        $this->diperbarui_pada = now();
-        $this->diperbarui_oleh = Auth::user()->username ?? 'system';
-        $this->save();
-        
-        // Update parent status if parent exists
-        if ($this->orangTua) {
-            $this->orangTua->updateStatusBasedOnChildren();
+        // Only proceed if status will change
+        if ($this->status !== $newStatus) {
+            $this->status = $newStatus;
+            
+            // Update the tahun_ajaran_id to match the class's academic year
+            if ($tahunAjaran) {
+                $this->id_tahun_ajaran = $tahunAjaran->id_tahun_ajaran;
+            }
+            
+            $this->diperbarui_pada = now();
+            $this->diperbarui_oleh = Auth::user() ? Auth::user()->username : 'system';
+            $this->save();
         }
     }
     
@@ -185,6 +182,17 @@ class Siswa extends Model
         $wasNew = !$this->exists;
         $oldKelasId = $this->getOriginal('id_kelas');
         $oldParentId = $this->getOriginal('id_orangtua');
+        $oldStatus = $this->getOriginal('status');
+        
+        // Set default values for audit fields if creating new record
+        if ($wasNew) {
+            $this->dibuat_pada = $this->dibuat_pada ?: now();
+            $this->dibuat_oleh = $this->dibuat_oleh ?: (Auth::user() ? Auth::user()->username : 'system');
+        }
+        
+        // Always update modified fields
+        $this->diperbarui_pada = now();
+        $this->diperbarui_oleh = Auth::user() ? Auth::user()->username : 'system';
         
         $result = parent::save($options);
         
@@ -193,8 +201,13 @@ class Siswa extends Model
             $this->updateStatusBasedOnClass();
         }
         
+        // Update parent status if needed
+        $shouldUpdateParent = false;
+        
         // If parent ID has changed, update both old and new parent statuses
-        if (!$wasNew && $this->isDirty('id_orangtua')) {
+        if (!$wasNew && $oldParentId !== $this->id_orangtua) {
+            $shouldUpdateParent = true;
+            
             // Update old parent status
             if ($oldParentId) {
                 $oldParent = OrangTua::find($oldParentId);
@@ -202,16 +215,39 @@ class Siswa extends Model
                     $oldParent->updateStatusBasedOnChildren();
                 }
             }
-            
-            // Update new parent status
-            if ($this->id_orangtua) {
-                $parent = OrangTua::find($this->id_orangtua);
-                if ($parent) {
-                    $parent->updateStatusBasedOnChildren();
-                }
+        }
+        
+        // If student status has changed, update current parent status
+        if (!$wasNew && $oldStatus !== $this->status) {
+            $shouldUpdateParent = true;
+        }
+        
+        // Update current parent status if needed
+        if (($shouldUpdateParent || $wasNew) && $this->id_orangtua) {
+            $parent = OrangTua::find($this->id_orangtua);
+            if ($parent) {
+                $parent->updateStatusBasedOnChildren();
             }
         }
         
         return $result;
+    }
+    
+    /**
+     * Boot the model
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        // When a student is deleted, update parent status
+        static::deleted(function ($siswa) {
+            if ($siswa->id_orangtua) {
+                $parent = OrangTua::find($siswa->id_orangtua);
+                if ($parent) {
+                    $parent->updateStatusBasedOnChildren();
+                }
+            }
+        });
     }
 }

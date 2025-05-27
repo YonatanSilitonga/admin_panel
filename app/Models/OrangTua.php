@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class OrangTua extends Model
 {
@@ -85,7 +86,6 @@ class OrangTua extends Model
         return $this->hasMany(Siswa::class, 'id_orangtua', 'id_orangtua');
     }
     
-
     /**
      * Get permission letters associated with this parent.
      */
@@ -101,29 +101,33 @@ class OrangTua extends Model
      */
     public function updateStatusBasedOnChildren()
     {
-        // Get all children of this parent
-        $children = $this->siswa;
+        // Get all children of this parent (fresh from database)
+        $children = $this->siswa()->get();
         
         // If no children, status should be pending
         if ($children->isEmpty()) {
-            $this->status = self::STATUS_PENDING;
-            $this->save();
-            return;
-        }
-        
-        // Check if all children are inactive
-        $allInactive = $children->every(function ($child) {
-            return $child->status === Siswa::STATUS_INACTIVE;
-        });
-        
-        if ($allInactive) {
-            $this->status = self::STATUS_INACTIVE;
+            $newStatus = self::STATUS_PENDING;
         } else {
-            // If at least one child is active, parent should be active
-            $this->status = self::STATUS_ACTIVE;
+            // Check if all children are inactive
+            $allInactive = $children->every(function ($child) {
+                return $child->status === Siswa::STATUS_INACTIVE;
+            });
+            
+            if ($allInactive) {
+                $newStatus = self::STATUS_INACTIVE;
+            } else {
+                // If at least one child is active, parent should be active
+                $newStatus = self::STATUS_ACTIVE;
+            }
         }
         
-        $this->save();
+        // Only update if status has changed to avoid unnecessary saves
+        if ($this->status !== $newStatus) {
+            $this->status = $newStatus;
+            $this->diperbarui_pada = now();
+            $this->diperbarui_oleh = Auth::user() ? Auth::user()->username : 'system';
+            $this->save();
+        }
     }
     
     /**
@@ -143,5 +147,38 @@ class OrangTua extends Model
             default:
                 return '<span class="badge bg-light text-dark">Unknown</span>';
         }
+    }
+    
+    /**
+     * Override the save method to handle status updates
+     */
+    public function save(array $options = [])
+    {
+        // Set default values for audit fields if creating new record
+        if (!$this->exists) {
+            $this->dibuat_pada = $this->dibuat_pada ?: now();
+            $this->dibuat_oleh = $this->dibuat_oleh ?: (Auth::user() ? Auth::user()->username : 'system');
+        }
+        
+        // Always update modified fields
+        $this->diperbarui_pada = now();
+        $this->diperbarui_oleh = Auth::user() ? Auth::user()->username : 'system';
+        
+        return parent::save($options);
+    }
+    
+    /**
+     * Boot the model
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        // When a parent is deleted, make sure to handle orphaned children
+        static::deleting(function ($orangTua) {
+            // You might want to handle this differently based on your business logic
+            // For example, you could set children's id_orangtua to null
+            $orangTua->siswa()->update(['id_orangtua' => null]);
+        });
     }
 }
