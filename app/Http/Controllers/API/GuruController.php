@@ -978,4 +978,58 @@ class GuruController extends Controller
             ], 500);
         }
     }
+
+    public function getSuratIzinByDate(Request $request)
+    {
+        try {
+            $tanggal = $request->query('tanggal');
+
+            if (!$tanggal) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Parameter tanggal diperlukan.',
+                ], 400);
+            }
+
+            try {
+                $tanggalCari = Carbon::parse($tanggal);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Format tanggal tidak valid.',
+                ], 400);
+            }
+
+            // Ambil surat izin yang aktif di tanggal tersebut
+            $suratIzin = SuratIzin::where('tanggal_mulai', '<=', $tanggalCari)
+                ->where('tanggal_selesai', '>=', $tanggalCari)
+                ->with([
+                    'siswa:id_siswa,nama,nis,id_orangtua,id_kelas,id_tahun_ajaran',
+                    'siswa.orangtua:id_orangtua,nama_lengkap',
+                    'siswa.kelas:id_kelas,nama_kelas',
+                    'siswa.tahunAjaran:id_tahun_ajaran,nama_tahun_ajaran',
+                ])
+                ->get([
+                    'id_surat_izin',
+                    'id_siswa',
+                    'id_orangtua',
+                    'jenis',
+                    'tanggal_mulai',
+                    'tanggal_selesai',
+                    'alasan',
+                    'status'
+                ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data surat izin berhasil diambil.',
+                'data' => $suratIzin,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

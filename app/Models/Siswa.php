@@ -28,7 +28,6 @@ class Siswa extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'id_siswa';
 
     /**
      * Indicates if the model should be timestamped.
@@ -36,26 +35,27 @@ class Siswa extends Model
      * @var bool
      */
     public $timestamps = true;
-
+    
     /**
      * The column name for the created at timestamp.
      *
      * @var string
      */
     const CREATED_AT = 'dibuat_pada';
-
+    
     /**
      * The column name for the updated at timestamp.
      *
      * @var string
      */
     const UPDATED_AT = 'diperbarui_pada';
-
+    
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
+    protected $primaryKey = 'id_siswa';
     protected $fillable = [
         'nama',
         'nis',
