@@ -23,52 +23,52 @@
                         'tooltip' => 'Beranda'
                     ],
                     [
-                        'url' => '/rekapitulasi',
-                        'pattern' => ['rekapitulasi*', 'admin/rekapitulasi*'],
-                        'icon' => 'edit_note',
-                        'label' => 'Rekapitulasi',
-                        'tooltip' => 'Rekapitulasi'
-                    ],
-                    [
                         'url' => '/guru',
                         'pattern' => 'guru*',
                         'icon' => 'school',
-                        'label' => 'Manajemen Data Guru',
+                        'label' => 'Data Guru',
                         'tooltip' => 'Data Guru'
+                    ],
+                    [
+                        'url' => '/users',
+                        'pattern' => ['users*', 'admin/users*'],
+                        'icon' => 'manage_accounts',
+                        'label' => 'Akun Pengguna',
+                        'tooltip' => 'Akun Pengguna'
                     ],
                     [
                         'url' => '/orang-tua',
                         'pattern' => ['orang-tua*', 'admin/orang_tua*'],
                         'icon' => 'family_restroom',
-                        'label' => 'Manajemen Data Orang Tua',
+                        'label' => 'Data Orang Tua',
                         'tooltip' => 'Data Orang Tua'
                     ],
                     [
                         'url' => '/siswa',
                         'pattern' => ['siswa*', 'admin/siswa*'],
                         'icon' => 'person_pin',
-                        'label' => 'Manajemen Data Siswa',
+                        'label' => 'Data Siswa',
                         'tooltip' => 'Data Siswa'
-                    ],
-                    [
-                        'url' => '/users',
-                        'pattern' => ['users*', 'admin/users*'],
-                        'icon' => 'manage_accounts',
-                        'label' => 'Manajemen Akun Pengguna',
-                        'tooltip' => 'Akun Pengguna'
                     ],
                     [
                         'url' => '/kelas',
                         'pattern' => 'kelas*',
                         'icon' => 'class',
-                        'label' => 'Manajemen Data Kelas',
+                        'label' => 'Data Kelas',
                         'tooltip' => 'Data Kelas'
                     ],
+                                        [
+                        'url' => '/rekapitulasi',
+                        'pattern' => ['rekapitulasi*', 'admin/rekapitulasi*'],
+                        'icon' => 'edit_note',
+                        'label' => 'Rekapitulasi',
+                        'tooltip' => 'Rekapitulasi'
+                    ],  
                     [
                         'url' => '/mata-pelajaran',
                         'pattern' => 'mata-pelajaran*',
                         'icon' => 'menu_book',
-                        'label' => 'Manajemen Mata Pelajaran',
+                        'label' => 'Mata Pelajaran',
                         'tooltip' => 'Mata Pelajaran'
                     ],
                     [
@@ -82,7 +82,7 @@
                         'url' => '/tahun-ajaran',
                         'pattern' => 'tahun-ajaran*',
                         'icon' => 'date_range',
-                        'label' => 'Manajemen Tahun Ajaran',
+                        'label' => 'Tahun Ajaran',
                         'tooltip' => 'Tahun Ajaran'
                     ],
                 ];
