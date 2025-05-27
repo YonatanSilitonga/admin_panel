@@ -29,8 +29,7 @@ class OrangTua extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'id_orangtua';
-
+    
     /**
      * Indicates if the model should be timestamped.
      *
@@ -51,12 +50,13 @@ class OrangTua extends Model
      * @var string
      */
     const UPDATED_AT = 'diperbarui_pada';
-
+    
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
+    protected $primaryKey = 'id_orangtua';
     protected $fillable = [
         'id_user',
         'nama_lengkap',

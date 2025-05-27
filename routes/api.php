@@ -75,6 +75,8 @@ Route::get('/view-file/{fileName}', [SuratIzinController::class, 'viewFile']);
 Route::get('/storage/{path}', [SuratIzinController::class, 'viewFile'])
      ->where('path', '.*'); // Mengizinkan path bersarang
 
+Route::get('/guru/surat-izin-by-date', [GuruController::class, 'getSuratIzinByDate']);
+
 // Protected routes - menggunakan middleware 
 Route::middleware('auth:sanctum')->group(function () {
     // Auth
@@ -201,8 +203,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/riwayat/siswa/{id_siswa}', [GuruController::class, 'getDetailSiswa']);
 
         Route::get('/rekapitulasi/detail', [GuruController::class, 'getDetailRekapitulasi']);
+        
+        
+        
     });
-
+    
+    
     // Orangtua Routes
     Route::prefix('orangtua')->group(function () {
         Route::get('/', [OrangtuaController::class, 'index']);
