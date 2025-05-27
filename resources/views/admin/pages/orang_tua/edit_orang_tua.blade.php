@@ -66,25 +66,21 @@
                             </div>
 
                             <!-- Status -->
-                            <div class="col-md-6 mb-3">
-                                <label for="status" class="form-label">Status</label>
-                                <select name="status" id="status"
-                                    class="form-select @error('status') is-invalid @enderror" required>
-                                    <option value="aktif" {{ old('status', $orangTua->status) == 'aktif' ? 'selected' : '' }}>
-                                        Aktif
-                                    </option>
-                                    <option value="nonaktif" {{ old('status', $orangTua->status) == 'nonaktif' ? 'selected' : '' }}>
-                                        Nonaktif
-                                    </option>
-                                    <option value="pending" {{ old('status', $orangTua->status) == 'pending' ? 'selected' : '' }}>
-                                        Pending
-                                    </option>
-                                </select>
-                                <small class="text-muted">Status akan otomatis diperbarui berdasarkan status anak.</small>
-                                @error('status')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+<div class="col-md-6 mb-3">
+    <label for="status" class="form-label">Status</label>
+    <input type="text" 
+           id="status" 
+           class="form-control" 
+           value="{{ ucfirst(old('status', $orangTua->status)) }}" 
+           readonly>
+    <input type="hidden" 
+           name="status" 
+           value="{{ old('status', $orangTua->status) }}">
+    <small class="text-muted">
+        Status akan otomatis diperbarui berdasarkan status anak.
+    </small>
+</div>
+
 
                             <!-- Alamat -->
                             <div class="col-md-12 mb-3">

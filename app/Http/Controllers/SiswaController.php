@@ -76,7 +76,7 @@ class SiswaController extends Controller
            ->get();
        
        // Ambil semua data orang tua aktif dan pending
-       $orangTuaList = OrangTua::whereIn('status', [OrangTua::STATUS_ACTIVE, OrangTua::STATUS_PENDING])
+       $orangTuaList = OrangTua::whereIn('status', [OrangTua::STATUS_ACTIVE, OrangTua::STATUS_PENDING, OrangTua::STATUS_INACTIVE])
            ->orderBy('nama_lengkap')
            ->get();
        

@@ -258,7 +258,7 @@ class OrangTuaController extends Controller
             'alamat' => 'nullable|string',
             'pekerjaan' => 'nullable|string|max:255',
             'nomor_telepon' => 'nullable|numeric|digits_between:10,15',
-            'status' => 'nullable|in:aktif,tidak_aktif,pending', // Validasi status manual
+            'status' => 'nullable|in:aktif,nonaktif,pending', // Validasi status manual
         ], [
             'nama_lengkap.required' => 'Nama lengkap harus diisi',
             'nomor_telepon.numeric' => 'Nomor telepon harus berupa angka',
