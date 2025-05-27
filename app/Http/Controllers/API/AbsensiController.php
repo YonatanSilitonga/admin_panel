@@ -510,9 +510,9 @@ class AbsensiController extends Controller
 
         $tanggal = $request->input('tanggal');
         $absensiData = $request->input('absensi');
+        $notifResults = [];
 
         foreach ($absensiData as $data) {
-            // Simpan atau update absensi
             Absensi::updateOrCreate(
                 [
                     'id_jadwal' => $idJadwal,
@@ -525,31 +525,25 @@ class AbsensiController extends Controller
                 ]
             );
 
-            // Kirim dan simpan notifikasi jika siswa tidak hadir (alpa, izin, sakit)
             if (in_array(strtolower($data['status']), ['alpa', 'izin', 'sakit'])) {
                 $siswa = Siswa::with('orangTua.user')->find($data['id_siswa']);
 
                 if ($siswa && $siswa->orangTua && $siswa->orangTua->user) {
                     $userOrtu = $siswa->orangTua->user;
                     $catatan = $data['catatan'] ?? '';
-
                     $pesan = "{$siswa->nama} tidak hadir pada tanggal $tanggal dengan status: " . ucfirst($data['status']) . ".";
                     if (!empty($catatan)) {
                         $pesan .= " Catatan dari guru: \"$catatan\".";
                     }
 
-                    // Simpan ke tabel notifikasi
                     Notifikasi::create([
                         'id_user' => $userOrtu->id_user,
                         'judul' => 'Ketidakhadiran Siswa',
                         'pesan' => $pesan,
                         'tipe' => 'absensi',
                         'dibaca' => false,
-                        // 'dibuat_oleh' => optional(auth()->user())->name ?? 'sistem',
-                        // 'diperbarui_oleh' => optional(auth()->user())->name ?? 'sistem',
                     ]);
 
-                    // Kirim notifikasi FCM jika ada token
                     if ($userOrtu->fcm_token) {
                         $message = CloudMessage::withTarget('token', $userOrtu->fcm_token)
                             ->withNotification(Notification::create(
@@ -564,8 +558,18 @@ class AbsensiController extends Controller
 
                         try {
                             $this->messaging->send($message);
+                            $notifResults[] = [
+                                'id_siswa' => $siswa->id_siswa,
+                                'status' => 'success',
+                                'message' => "Notifikasi dikirim ke orang tua {$userOrtu->username}."
+                            ];
                         } catch (\Exception $e) {
-                            Log::error("Gagal mengirim notifikasi FCM: " . $e->getMessage());
+                            Log::error("Gagal mengirim notifikasi FCM ke {$userOrtu->username}: " . $e->getMessage());
+                            $notifResults[] = [
+                                'id_siswa' => $siswa->id_siswa,
+                                'status' => 'error',
+                                'message' => "Gagal mengirim notifikasi ke orang tua {$userOrtu->username}."
+                            ];
                         }
                     }
                 }
@@ -574,8 +578,8 @@ class AbsensiController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Absensi berhasil disimpan dan notifikasi dikirim.',
-            'data' => null,
+            'message' => 'Absensi berhasil disimpan.',
+            'notifikasi' => $notifResults,
         ]);
     }
 }
