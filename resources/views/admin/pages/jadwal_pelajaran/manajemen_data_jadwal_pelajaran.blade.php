@@ -254,66 +254,6 @@
                 }
             });
         });
-        
-        // Hapus jadwal
-        $('.btn-delete-jadwal').on('click', function() {
-            const id = $(this).data('id');
-            
-            Swal.fire({
-                title: 'Konfirmasi Hapus',
-                text: "Apakah Anda yakin ingin menghapus jadwal ini?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Kirim request hapus ke server
-                    $.ajax({
-                        url: `/jadwal-pelajaran/${id}`,
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                Swal.fire(
-                                    'Berhasil!',
-                                    response.message,
-                                    'success'
-                                ).then(() => {
-                                    location.reload();
-                                });
-                            } else {
-                                Swal.fire(
-                                    'Gagal!',
-                                    response.message,
-                                    'error'
-                                );
-                            }
-                        },
-                        error: function() {
-                            Swal.fire(
-                                'Gagal!',
-                                'Terjadi kesalahan saat menghapus jadwal',
-                                'error'
-                            );
-                        }
-                    });
-                }
-            });
-        });
-        
-        // Format waktu dari format 24 jam ke format 12 jam
-        function formatTime(time) {
-            const timeParts = time.split(':');
-            let hours = parseInt(timeParts[0]);
-            const minutes = timeParts[1];
-            
-            return hours + ':' + minutes;
-        }
     });
 </script>
 @endsection

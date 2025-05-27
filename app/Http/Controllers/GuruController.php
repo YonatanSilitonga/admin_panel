@@ -118,9 +118,9 @@ public function exportExcel(Request $request)
 public function create()
 {
     // Mengambil semua mata pelajaran untuk dropdown
-    $allMataPelajaran = MataPelajaran::orderBy('nama')->get();
+    $mataPelajaran  = MataPelajaran::orderBy('nama')->get();
     
-    return view('admin.pages.guru.tambah_guru', compact('allMataPelajaran'));
+    return view('admin.pages.guru.tambah_guru', compact('mataPelajaran'));
 }
 
     public function show($id)
@@ -182,10 +182,10 @@ public function edit($id)
     $guru = Guru::with(['mataPelajaran', 'jadwal.kelas', 'jadwal.mataPelajaran'])->findOrFail($id);
 
     // Mengambil semua mata pelajaran untuk dropdown
-    $allMataPelajaran = MataPelajaran::orderBy('nama')->get();
+    $mataPelajaran  = MataPelajaran::orderBy('nama')->get();
 
     // Mengirimkan data guru dan mata pelajaran ke view edit
-    return view('admin.pages.guru.edit_guru', compact('guru', 'allMataPelajaran'));
+    return view('admin.pages.guru.edit_guru', compact('guru', 'mataPelajaran'));
 }
 
 
@@ -268,8 +268,6 @@ public function update(Request $request, $id)
         'nip'               => 'nullable|numeric|digits:18|unique:guru,nip,'.$id.',id_guru',
         'nomor_telepon'     => 'nullable|numeric|digits_between:10,15',
         'bidang_studi'      => 'nullable|string|max:255',
-        'mata_pelajaran'    => 'required|array',
-        'mata_pelajaran.*'  => 'exists:mata_pelajaran,id_mata_pelajaran',
         'status'            => 'required|string|in:aktif,nonaktif',
     ], [
         'nama_lengkap.required' => 'Nama lengkap harus diisi',
@@ -278,7 +276,6 @@ public function update(Request $request, $id)
         'nip.unique' => 'NIP sudah digunakan',
         'nomor_telepon.numeric' => 'Nomor telepon harus berupa angka',
         'nomor_telepon.digits_between' => 'Nomor telepon harus terdiri dari 10-15 digit',
-        'mata_pelajaran.required' => 'Pilih minimal satu mata pelajaran',
         'status.required' => 'Status harus dipilih',
     ]);
 

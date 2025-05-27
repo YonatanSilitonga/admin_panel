@@ -79,7 +79,7 @@
                 <th class="text-center" style="min-width: 20px;">No</th>
                 <th style="min-width: 100px;">Nama Lengkap</th>
                 <th style="min-width: 100px;">NIP</th>
-                <th style="min-width: 250px;">Mata Pelajaran</th>
+                <th style="min-width: 250px;">Bidang Studi</th>
                 <th class="text-center" style="min-width: 100px;">Status</th>
                 <th class="text-center" style="min-width: 100px;">Aksi</th>
             </tr>
@@ -91,12 +91,9 @@
                     <td>{{ $guru->nama_lengkap ?? '-' }}</td>
                     <td>{{ $guru->nip ?? '-' }}</td>
                     <td>
-                        @if($guru->mataPelajaran && $guru->mataPelajaran->count() > 0)
-                            {{ $guru->mataPelajaran->pluck('nama')->join(', ') }}
-                        @else
-                            -
-                        @endif
-                    </td>
+    {{ $guru->bidang_studi ?? '-' }}
+</td>
+
                     <td class="text-center">
                         @if($guru->status == 'aktif')
                             <span class="badge bg-success">Aktif</span>
@@ -147,10 +144,10 @@
                         <dt class="col-sm-4">Nomor Telepon</dt>
                         <dd class="col-sm-8" id="view-telepon">-</dd>
                         
-                        <dt class="col-sm-4">Mata Pelajaran</dt>
+                        <!-- <dt class="col-sm-4">Mata Pelajaran</dt>
                         <dd class="col-sm-8">
                             <span id="view-mata-pelajaran" class="fw-medium">-</span>
-                        </dd>
+                        </dd> -->
 
                         <dt class="col-sm-4">Status</dt>
                         <dd class="col-sm-8" id="view-status">-</dd>

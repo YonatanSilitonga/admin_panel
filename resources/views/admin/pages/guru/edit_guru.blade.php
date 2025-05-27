@@ -68,15 +68,24 @@
                             </div>
 
                             <!-- Bidang Studi -->
-                            <div class="col-md-6 mb-3">
-                                <label for="bidang_studi" class="form-label">Bidang Studi</label>
-                                <input type="text" name="bidang_studi" id="bidang_studi"
-                                    class="form-control @error('bidang_studi') is-invalid @enderror"
-                                    value="{{ old('bidang_studi', $guru->bidang_studi) }}">
-                                @error('bidang_studi')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+<div class="col-md-6 mb-3">
+    <label for="bidang_studi" class="form-label">Bidang Studi</label>
+    <select name="bidang_studi" id="bidang_studi"
+        class="form-select @error('bidang_studi') is-invalid @enderror">
+        <option value="">-- Pilih Mata Pelajaran --</option>
+        @foreach ($mataPelajaran as $mapel)
+            <option value="{{ $mapel->nama }}"
+                {{ old('bidang_studi', $guru->bidang_studi ?? '') == $mapel->nama ? 'selected' : '' }}>
+                {{ $mapel->nama }}
+            </option>
+        @endforeach
+    </select>
+    @error('bidang_studi')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+
 
                             <!-- Status -->
                             <div class="col-md-6 mb-3">
@@ -94,34 +103,6 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-
-                            <!-- Mata Pelajaran -->
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label">Mata Pelajaran yang Diampu</label>
-                                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2">
-                                    @foreach ($allMataPelajaran as $mapel)
-                                        <div class="col">
-                                            <div class="border rounded px-3 py-2 h-100 bg-light d-flex align-items-center">
-                                                <div class="form-check mb-0">
-                                                    <input class="form-check-input" type="checkbox" name="mata_pelajaran[]"
-                                                        id="mapel-{{ $mapel->id_mata_pelajaran }}"
-                                                        value="{{ $mapel->id_mata_pelajaran }}"
-                                                        {{ in_array($mapel->id_mata_pelajaran, old('mata_pelajaran', $guru->mataPelajaran->pluck('id_mata_pelajaran')->toArray())) ? 'checked' : '' }}>
-                                                    <label class="form-check-label ms-2"
-                                                        for="mapel-{{ $mapel->id_mata_pelajaran }}">
-                                                        {{ $mapel->nama }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                                @error('mata_pelajaran')
-                                    <div class="text-danger mt-2">{{ $message }}</div>
-                                @enderror
-                                <div class="form-text mt-2">Pilih minimal satu mata pelajaran</div>
-                            </div>
-                        </div>
 
                         <div class="row mb-4">
                             <div class="col-12">
