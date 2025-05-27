@@ -16,7 +16,6 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-
 class OrangTuaController extends Controller
 {
    /**
@@ -58,12 +57,39 @@ class OrangTuaController extends Controller
             });
         }
     
-        // $orangTuaList = $query->orderBy('nama_lengkap')->paginate(perPage: 10);
-        // $orangTuaList = $query->orderBy('nama_lengkap')->get();
         $orangTuaList = $query->orderBy('nama_lengkap')->get();
 
-        // Append query parameters to pagination links
-        // $orangTuaList->appends($request->query());
+        // Update status for all parents before displaying
+        foreach ($orangTuaList as $orangTua) {
+            $orangTua->updateStatusBasedOnChildren();
+        }
+
+        // Refresh the query after status updates to ensure we show the correct filtered results
+        $query = OrangTua::with(['siswa.kelas', 'user']);
+        
+        // Reapply filters after status updates
+        if ($kelasId) {
+            $query->whereHas('siswa', function ($siswaQuery) use ($kelasId) {
+                $siswaQuery->where('id_kelas', $kelasId);
+            });
+        }
+
+        if ($request->has('status')) {
+            if ($status !== '' && $status !== 'semua') {
+                $query->where('orangtua.status', $status);
+            }
+        } else {
+            $query->where('orangtua.status', 'aktif');
+        }
+        
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
+                  ->orWhere('nomor_telepon', 'like', "%{$search}%");
+            });
+        }
+
+        $orangTuaList = $query->orderBy('nama_lengkap')->get();
         
         // Filter ulang relasi siswa jika kelas disaring
         if ($kelasId) {
@@ -78,66 +104,71 @@ class OrangTuaController extends Controller
         return view('admin.pages.orang_tua.manajemen_data_orang_tua', compact('orangTuaList', 'kelasList'));
     }
 
-
-/**
-* Export data orang tua to PDF.
-*/
-public function exportPdf(Request $request)
-{
-   $kelasId = $request->input('kelas');
-   $status = $request->input('status');
-   $search = $request->input('search');
-   
-   $query = OrangTua::with(['siswa.kelas', 'user']);
-   
-   // Filter berdasarkan kelas anak
-   if ($kelasId) {
-       $query->whereHas('siswa', function ($siswaQuery) use ($kelasId) {
-           $siswaQuery->where('id_kelas', $kelasId);
-       });
-   }
-   
-   // Filter berdasarkan status
-   if ($request->has('status') && $status !== '' && $status !== 'semua') {
-       $query->where('status', $status);
-   }
-   
-   // Filter berdasarkan pencarian
-   if ($search) {
-       $query->where(function($q) use ($search) {
-           $q->where('nama_lengkap', 'like', "%{$search}%")
-             ->orWhere('nomor_telepon', 'like', "%{$search}%")
-             ->orWhere('pekerjaan', 'like', "%{$search}%");
-       });
-   }
-   
-   $orangTuaList = $query->orderBy('nama_lengkap')->get();
-   
-   // Filter ulang relasi siswa jika kelas disaring
-   if ($kelasId) {
-       foreach ($orangTuaList as $orangTua) {
-           $filteredSiswa = $orangTua->siswa->filter(function ($siswa) use ($kelasId) {
-               return $siswa->id_kelas == $kelasId;
+    /**
+    * Export data orang tua to PDF.
+    */
+    public function exportPdf(Request $request)
+    {
+       $kelasId = $request->input('kelas');
+       $status = $request->input('status');
+       $search = $request->input('search');
+       
+       $query = OrangTua::with(['siswa.kelas', 'user']);
+       
+       // Filter berdasarkan kelas anak
+       if ($kelasId) {
+           $query->whereHas('siswa', function ($siswaQuery) use ($kelasId) {
+               $siswaQuery->where('id_kelas', $kelasId);
            });
-           $orangTua->setRelation('siswa', $filteredSiswa);
        }
-   }
+       
+       // Filter berdasarkan status
+       if ($request->has('status') && $status !== '' && $status !== 'semua') {
+           $query->where('status', $status);
+       }
+       
+       // Filter berdasarkan pencarian
+       if ($search) {
+           $query->where(function($q) use ($search) {
+               $q->where('nama_lengkap', 'like', "%{$search}%")
+                 ->orWhere('nomor_telepon', 'like', "%{$search}%")
+                 ->orWhere('pekerjaan', 'like', "%{$search}%");
+           });
+       }
+       
+       $orangTuaList = $query->orderBy('nama_lengkap')->get();
+       
+       // Update status for all parents before exporting
+       foreach ($orangTuaList as $orangTua) {
+           $orangTua->updateStatusBasedOnChildren();
+       }
+       
+       // Filter ulang relasi siswa jika kelas disaring
+       if ($kelasId) {
+           foreach ($orangTuaList as $orangTua) {
+               $filteredSiswa = $orangTua->siswa->filter(function ($siswa) use ($kelasId) {
+                   return $siswa->id_kelas == $kelasId;
+               });
+               $orangTua->setRelation('siswa', $filteredSiswa);
+           }
+       }
 
-   $pdf = Pdf::loadView('exports.orangtua_pdf', compact('orangTuaList'));
-   return $pdf->download('data_orang_tua.pdf');
-}
+       $pdf = Pdf::loadView('exports.orangtua_pdf', compact('orangTuaList'));
+       return $pdf->download('data_orang_tua.pdf');
+    }
 
-/**
-* Export data orang tua to Excel.
-*/
-public function exportExcel(Request $request)
-{
-   return Excel::download(new OrangTuaExport(
-       $request->input('kelas'), 
-       $request->input('status'),
-       $request->input('search')
-   ), 'data_orang_tua.xlsx');
-}
+    /**
+    * Export data orang tua to Excel.
+    */
+    public function exportExcel(Request $request)
+    {
+       return Excel::download(new OrangTuaExport(
+           $request->input('kelas'), 
+           $request->input('status'),
+           $request->input('search')
+       ), 'data_orang_tua.xlsx');
+    }
+
    /**
     * Show the form for creating a new parent.
     */
@@ -224,6 +255,9 @@ public function exportExcel(Request $request)
                ->with('error', 'Data orang tua tidak ditemukan.');
        }
        
+       // Update status before displaying
+       $orangTua->updateStatusBasedOnChildren();
+       
        return view('admin.pages.orang_tua.detail_orang_tua', compact('orangTua'));
    }
 
@@ -233,6 +267,9 @@ public function exportExcel(Request $request)
    public function edit($id)
    {
        $orangTua = OrangTua::with('user', 'siswa.kelas')->findOrFail($id);
+       
+       // Update status before editing
+       $orangTua->updateStatusBasedOnChildren();
    
        return view('admin.pages.orang_tua.edit_orang_tua', compact('orangTua'));
    }
@@ -267,12 +304,14 @@ public function exportExcel(Request $request)
                'diperbarui_oleh' => Auth::user()->username ?? 'system',
            ]);
            
-           // Only update status if manually specified and user has permission
+           // Check if manual status override is provided
            if ($request->has('status') && in_array($request->status, [OrangTua::STATUS_ACTIVE, OrangTua::STATUS_INACTIVE, OrangTua::STATUS_PENDING])) {
+               // Manual status override - only allow this if user has proper permissions
+               // You might want to add permission checking here
                $orangTua->status = $request->status;
                $orangTua->save();
            } else {
-               // Otherwise, update status based on children
+               // Always update status based on children unless manually overridden
                $orangTua->updateStatusBasedOnChildren();
            }
        
@@ -343,6 +382,11 @@ public function exportExcel(Request $request)
            $query->where('id_kelas', $id_kelas)->with('kelas');
        }, 'user'])->get();
        
+       // Update status for all parents
+       foreach ($orangTuaList as $orangTua) {
+           $orangTua->updateStatusBasedOnChildren();
+       }
+       
        return view('admin.pages.orang_tua.kelas_orang_tua', compact('orangTuaList', 'kelas'));
    }
 
@@ -355,6 +399,12 @@ public function exportExcel(Request $request)
        
        $query = OrangTua::orderBy('nama_lengkap');
        
+       // Update all parent statuses first
+       $allParents = OrangTua::all();
+       foreach ($allParents as $parent) {
+           $parent->updateStatusBasedOnChildren();
+       }
+       
        // Only filter by status if it's provided and not empty
        if ($status !== null && $status !== '' && $status !== 'semua') {
            $query->where('status', $status);
@@ -366,18 +416,18 @@ public function exportExcel(Request $request)
            'success' => true,
            'data' => $orangTuaList,
        ], 200);
+   }
 
-    }public function getAnak($id)
-    {
-        $orangTua = OrangTua::with('siswa.kelas')->find($id);
-    
-        if (!$orangTua) {
-            return response()->json([], 404);
-        }
-    
-        return response()->json($orangTua->siswa);
-    }
+   public function getAnak($id)
+   {
+       $orangTua = OrangTua::with('siswa.kelas')->find($id);
    
+       if (!$orangTua) {
+           return response()->json([], 404);
+       }
+   
+       return response()->json($orangTua->siswa);
+   }
    
    /**
     * Update parent status based on children.
@@ -386,13 +436,51 @@ public function exportExcel(Request $request)
    {
        try {
            $orangTua = OrangTua::findOrFail($id);
+           $oldStatus = $orangTua->status;
+           
            $orangTua->updateStatusBasedOnChildren();
+           
+           // Refresh the model from database to get updated status
+           $orangTua->refresh();
            
            return response()->json([
                'success' => true,
                'message' => 'Status orang tua berhasil diperbarui',
-               'status' => $orangTua->status,
+               'old_status' => $oldStatus,
+               'new_status' => $orangTua->status,
                'status_badge' => $orangTua->getStatusBadgeHtml()
+           ]);
+       } catch (\Exception $e) {
+           return response()->json([
+               'success' => false,
+               'message' => 'Gagal memperbarui status: ' . $e->getMessage()
+           ], 500);
+       }
+   }
+
+   /**
+    * Bulk update all parent statuses based on their children.
+    */
+   public function bulkUpdateStatus()
+   {
+       try {
+           $allParents = OrangTua::all();
+           $updatedCount = 0;
+           
+           foreach ($allParents as $parent) {
+               $oldStatus = $parent->status;
+               $parent->updateStatusBasedOnChildren();
+               
+               if ($oldStatus !== $parent->status) {
+                   $updatedCount++;
+               }
+           }
+           
+           return response()->json([
+               'success' => true,
+               'message' => "Status {$updatedCount} orang tua berhasil diperbarui",
+               'updated_count' => $updatedCount,
+               'total_count' => $allParents->count()
            ]);
        } catch (\Exception $e) {
            return response()->json([
