@@ -86,12 +86,21 @@ class KelasController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_kelas' => 'required|string|max:255',
-            'tingkat' => 'required|string|max:255',
-            'id_guru' => 'nullable|exists:guru,id_guru',
-            'id_tahun_ajaran' => 'required|exists:tahun_ajaran,id_tahun_ajaran',
-        ]);
+$request->validate([
+    'nama_kelas' => [
+        'required',
+        'string',
+        'max:255',
+        // 'regex:/^[A-Za-z]+$/', // hanya huruf A-Z dan a-z
+    ],
+    'tingkat' => [
+        'required',
+        'in:1,2,3', 
+    ],
+    'id_guru' => 'nullable|exists:guru,id_guru',
+    'id_tahun_ajaran' => 'required|exists:tahun_ajaran,id_tahun_ajaran',
+]);
+
 
         // Cek apakah guru sudah jadi wali kelas lain
         if ($request->id_guru) {
@@ -167,8 +176,11 @@ class KelasController extends Controller
 
         $request->validate([
             'nama_kelas' => 'required|string|max:255',
-            'tingkat' => 'required|string|max:255',
-            'id_guru' => 'nullable|exists:guru,id_guru',
+    'tingkat' => [
+        'required',
+        'in:1,2,3', // hanya boleh 7, 8, atau 9
+    ],
+                'id_guru' => 'nullable|exists:guru,id_guru',
             'id_tahun_ajaran' => 'required|exists:tahun_ajaran,id_tahun_ajaran',
         ]);
 

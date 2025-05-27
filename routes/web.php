@@ -14,6 +14,7 @@ use App\Http\Controllers\TahunAjaranController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\JadwalPelajaranController;
 use App\Http\Controllers\RekapitulasiController;
+use App\Http\Controllers\SiswaImportController;
 
 // Menampilkan formulir login
 Route::get('/', [AuthController::class, 'showLoginForm']);
@@ -43,11 +44,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/siswa/orang-tua/{orangTuaId}', [SiswaController::class, 'getByOrangTua']);
     Route::post('siswa/{id}/update-status', [SiswaController::class, 'updateStatus']);
 
-
     // Export Siswa
     Route::get('/siswa/export/pdf', [SiswaController::class, 'exportPdf'])->name('siswa.export.pdf');
     Route::get('/siswa/export/excel', [SiswaController::class, 'exportExcel'])->name('siswa.export.excel');
-    // Import Siswa
+    
+    // Import Siswa - Enhanced
+    Route::get('/siswa/import/preview', [SiswaImportController::class, 'showImportPreview'])->name('siswa.import.preview');
+    Route::post('/siswa/import/process', [SiswaImportController::class, 'processImport'])->name('siswa.import.process');
+    Route::get('/siswa/import/template', [SiswaImportController::class, 'downloadTemplate'])->name('siswa.import.template');
+    Route::post('/siswa/import/validate', [SiswaImportController::class, 'validateImportFile'])->name('siswa.import.validate');
+    
+    // Import Siswa - Legacy (untuk backward compatibility)
     Route::post('/siswa/import', [SiswaController::class, 'import'])->name('siswa.import.excel');
 
     // Orang Tua
@@ -57,8 +64,6 @@ Route::middleware('auth')->group(function () {
     Route::post('orang-tua/{id}/update-status', [OrangTuaController::class, 'updateStatus']);
     Route::get('/orang-tua/{id}/anak', [OrangTuaController::class, 'getAnak']);
     
-
-
     // Halaman detail berdasarkan kelas yang dipilih
     Route::get('/orang-tua/kelas/{id_kelas}', [OrangTuaController::class, 'showByKelas'])->name('orang-tua.kelas');
 
@@ -69,12 +74,10 @@ Route::middleware('auth')->group(function () {
     Route::get('kelas/tahun-ajaran/{tahunAjaranId}', [KelasController::class, 'getByTahunAjaran']);
     Route::get('kelas/active', [KelasController::class, 'getActiveClasses']);
 
-
     // Tahun Ajaran
     Route::resource('tahun-ajaran', TahunAjaranController::class);
     Route::get('tahun-ajaran/{id}/set-active', [TahunAjaranController::class, 'setActive'])->name('tahun-ajaran.set-active');
     Route::get('tahun-ajaran/active', [TahunAjaranController::class, 'getActive']);
-
 
     // Mata Pelajaran
     Route::resource('mata-pelajaran', MataPelajaranController::class);

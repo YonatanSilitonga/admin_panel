@@ -68,9 +68,31 @@
             class="btn btn-success d-flex align-items-center gap-2">
             <i class="bi bi-file-earmark-excel-fill"></i> Excel
         </a>
-        <a href="{{ route('siswa.create') }}" class="btn btn-success d-flex align-items-center gap-2">
-            <i class="bi bi-plus-circle"></i> Tambah
-        </a>
+        
+        <!-- Dropdown untuk Tambah Data -->
+        <div class="btn-group">
+            <button type="button" class="btn btn-success dropdown-toggle d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-plus-circle"></i> Tambah
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('siswa.create') }}">
+                        <i class="bi bi-person-plus"></i> Tambah Manual
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('siswa.import.preview') }}">
+                        <i class="bi bi-upload"></i> Import Excel
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('siswa.import.template') }}">
+                        <i class="bi bi-download"></i> Download Template
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 

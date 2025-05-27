@@ -39,6 +39,7 @@
                             @error('nama_kelas')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                            <small class="form-text text-muted">Contoh: 7A, 8B, 9C</small>
                         </div>
                         
                         <!-- Tingkat -->
@@ -48,7 +49,7 @@
                             @error('tingkat')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="form-text text-muted">Contoh: 7, 8, 9, 10, 11, 12</small>
+                            <small class="form-text text-muted">Contoh: 1, 2, 3</small>
                         </div>
                         
                         <!-- Wali Kelas -->
