@@ -98,6 +98,26 @@ class JadwalPelajaranController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $kelasList = Kelas::with('tahunAjaran')->orderBy('tingkat')->orderBy('nama_kelas')->get();
+        $mataPelajaranList = MataPelajaran::orderBy('nama')->get();
+        $guruList = Guru::where('status', 'aktif')->orderBy('nama_lengkap')->get();
+        $tahunAjaranList = TahunAjaran::orderBy('nama_tahun_ajaran', 'desc')->get();
+        $sesiList = self::SESI_WAKTU;
+
+        return view('admin.pages.jadwal_pelajaran.create', compact(
+            'kelasList',
+            'mataPelajaranList',
+            'guruList',
+            'tahunAjaranList',
+            'sesiList'
+        ));
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -224,6 +244,48 @@ class JadwalPelajaranController extends Controller
             'data' => $jadwal,
             'selected_sessions' => $selectedSessions
         ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
+    {
+        $jadwal = Jadwal::with(['kelas', 'mataPelajaran', 'guru', 'tahunAjaran'])->findOrFail($id);
+        $kelasList = Kelas::with('tahunAjaran')->orderBy('tingkat')->orderBy('nama_kelas')->get();
+        $mataPelajaranList = MataPelajaran::orderBy('nama')->get();
+        $guruList = Guru::where('status', 'aktif')->orderBy('nama_lengkap')->get();
+        $tahunAjaranList = TahunAjaran::orderBy('nama_tahun_ajaran', 'desc')->get();
+        $sesiList = self::SESI_WAKTU;
+
+        // Cari jadwal terkait untuk mendapatkan sesi yang dipilih
+        $relatedJadwals = Jadwal::where('id_kelas', $jadwal->id_kelas)
+            ->where('id_mata_pelajaran', $jadwal->id_mata_pelajaran)
+            ->where('id_guru', $jadwal->id_guru)
+            ->where('hari', $jadwal->hari)
+            ->where('id_tahun_ajaran', $jadwal->id_tahun_ajaran)
+            ->orderBy('waktu_mulai')
+            ->get();
+
+        $selectedSessions = [];
+        foreach ($relatedJadwals as $relatedJadwal) {
+            foreach (self::SESI_WAKTU as $sesiNum => $sesiData) {
+                if ($relatedJadwal->waktu_mulai == $sesiData['waktu_mulai']) {
+                    $selectedSessions[] = $sesiNum;
+                    break;
+                }
+            }
+        }
+
+        return view('admin.pages.jadwal_pelajaran.edit', compact(
+            'jadwal',
+            'kelasList',
+            'mataPelajaranList',
+            'guruList',
+            'tahunAjaranList',
+            'sesiList',
+            'selectedSessions'
+        ));
     }
 
     /**
@@ -374,7 +436,7 @@ class JadwalPelajaranController extends Controller
     }
 
     /**
-     * Store jadwal massal untuk satu kelas.
+     * Store jadwal massal untuk satu kelas dengan support untuk edit existing.
      */
     public function storeMassal(Request $request)
     {
@@ -385,6 +447,7 @@ class JadwalPelajaranController extends Controller
             'jadwal.*.*' => 'array',
             'jadwal.*.*.id_mata_pelajaran' => 'nullable|exists:mata_pelajaran,id_mata_pelajaran',
             'jadwal.*.*.id_guru' => 'nullable|exists:guru,id_guru',
+            'jadwal.*.*.id_jadwal' => 'nullable|exists:jadwal,id_jadwal',
         ]);
 
         if ($validator->fails()) {
@@ -409,14 +472,37 @@ class JadwalPelajaranController extends Controller
         DB::beginTransaction();
         try {
             $jadwalData = $request->jadwal;
-            $createdJadwals = [];
+            $processedJadwals = [];
             $conflicts = [];
 
-            // Validasi semua jadwal terlebih dahulu
+            // Get all existing jadwal for this class
+            $existingJadwals = Jadwal::where('id_kelas', $request->id_kelas)
+                ->where('id_tahun_ajaran', $tahunAjaranId)
+                ->where('status', 'aktif')
+                ->get()
+                ->keyBy('id_jadwal');
+
+            $keepJadwalIds = [];
+            $processedCells = [];
+
+            // Process each jadwal entry
             foreach ($jadwalData as $hari => $sesiData) {
                 foreach ($sesiData as $sesi => $data) {
+                    $cellKey = "{$hari}_{$sesi}";
+                    
+                    // Skip if both mata pelajaran and guru are empty
+                    if (empty($data['id_mata_pelajaran']) && empty($data['id_guru'])) {
+                        // If there's an existing jadwal ID, mark it for deletion
+                        if (!empty($data['id_jadwal'])) {
+                            // Don't add to keepJadwalIds, so it will be deleted
+                        }
+                        continue;
+                    }
+
+                    // If only one field is filled, it's an error
                     if (empty($data['id_mata_pelajaran']) || empty($data['id_guru'])) {
-                        continue; // Skip empty entries
+                        $conflicts[] = "Data tidak lengkap pada hari " . ucfirst($hari) . " sesi " . $sesi;
+                        continue;
                     }
 
                     // Validasi guru mengampu mata pelajaran
@@ -430,24 +516,62 @@ class JadwalPelajaranController extends Controller
                         continue;
                     }
 
-                    // Cek konflik jadwal
+                    $sesiInfo = self::SESI_WAKTU[$sesi];
+                    $existingJadwalId = !empty($data['id_jadwal']) ? $data['id_jadwal'] : null;
+
+                    // Prepare exclude IDs for conflict check
+                    $excludeIds = [];
+                    if ($existingJadwalId) {
+                        $excludeIds = [$existingJadwalId];
+                    }
+
+                    // Check conflicts
                     $sessionConflicts = $this->checkSessionConflicts(
                         $request->id_kelas, 
                         $data['id_guru'], 
                         $hari, 
                         [$sesi], 
-                        $tahunAjaranId
+                        $tahunAjaranId,
+                        $excludeIds
                     );
 
                     if (!empty($sessionConflicts)) {
                         foreach ($sessionConflicts as $conflict) {
-                            $conflicts[] = "Konflik pada hari " . ucfirst($hari) . " sesi " . $sesi . ": " . $conflict['message'];
+                            $conflictDetail = "";
+                            if ($conflict['type'] === 'teacher') {
+                                $conflictDetail = "Guru sudah mengajar di kelas lain pada waktu yang sama";
+                            } elseif ($conflict['type'] === 'class') {
+                                $conflictDetail = "Kelas sudah memiliki jadwal lain pada waktu yang sama";
+                            }
+                            $conflicts[] = "Konflik pada hari " . ucfirst($hari) . " sesi " . $sesi . ": " . $conflictDetail;
                         }
+                        continue;
                     }
+
+                    // Store processed jadwal data
+                    $processedJadwals[] = [
+                        'existing_id' => $existingJadwalId,
+                        'id_kelas' => $request->id_kelas,
+                        'id_mata_pelajaran' => $data['id_mata_pelajaran'],
+                        'id_guru' => $data['id_guru'],
+                        'id_tahun_ajaran' => $tahunAjaranId,
+                        'hari' => $hari,
+                        'waktu_mulai' => $sesiInfo['waktu_mulai'],
+                        'waktu_selesai' => $sesiInfo['waktu_selesai'],
+                        'status' => 'aktif',
+                        'cell_key' => $cellKey
+                    ];
+
+                    // Keep track of jadwal IDs that should be preserved
+                    if ($existingJadwalId) {
+                        $keepJadwalIds[] = $existingJadwalId;
+                    }
+                    
+                    $processedCells[] = $cellKey;
                 }
             }
 
-            // Jika ada konflik, return error
+            // If there are conflicts, return error
             if (!empty($conflicts)) {
                 return response()->json([
                     'success' => false,
@@ -456,36 +580,69 @@ class JadwalPelajaranController extends Controller
                 ], 422);
             }
 
-            // Jika tidak ada konflik, buat semua jadwal
-            foreach ($jadwalData as $hari => $sesiData) {
-                foreach ($sesiData as $sesi => $data) {
-                    if (empty($data['id_mata_pelajaran']) || empty($data['id_guru'])) {
-                        continue; // Skip empty entries
-                    }
+            // Delete jadwals that are no longer needed
+            $jadwalsToDelete = $existingJadwals->filter(function($jadwal) use ($keepJadwalIds) {
+                return !in_array($jadwal->id_jadwal, $keepJadwalIds);
+            });
 
-                    $sesiInfo = self::SESI_WAKTU[$sesi];
-                    
+            foreach ($jadwalsToDelete as $jadwal) {
+                $jadwal->delete();
+            }
+
+            // Create or update jadwals
+            $createdCount = 0;
+            $updatedCount = 0;
+
+            foreach ($processedJadwals as $jadwalInfo) {
+                if ($jadwalInfo['existing_id']) {
+                    // Update existing jadwal
+                    $jadwal = Jadwal::find($jadwalInfo['existing_id']);
+                    if ($jadwal) {
+                        $jadwal->id_mata_pelajaran = $jadwalInfo['id_mata_pelajaran'];
+                        $jadwal->id_guru = $jadwalInfo['id_guru'];
+                        $jadwal->hari = $jadwalInfo['hari'];
+                        $jadwal->waktu_mulai = $jadwalInfo['waktu_mulai'];
+                        $jadwal->waktu_selesai = $jadwalInfo['waktu_selesai'];
+                        $jadwal->diperbarui_pada = now();
+                        $jadwal->diperbarui_oleh = Auth::user()->username ?? 'system';
+                        $jadwal->save();
+                        $updatedCount++;
+                    }
+                } else {
+                    // Create new jadwal
                     $jadwal = new Jadwal();
-                    $jadwal->id_kelas = $request->id_kelas;
-                    $jadwal->id_mata_pelajaran = $data['id_mata_pelajaran'];
-                    $jadwal->id_guru = $data['id_guru'];
-                    $jadwal->id_tahun_ajaran = $tahunAjaranId;
-                    $jadwal->hari = $hari;
-                    $jadwal->waktu_mulai = $sesiInfo['waktu_mulai'];
-                    $jadwal->waktu_selesai = $sesiInfo['waktu_selesai'];
-                    $jadwal->status = 'aktif';
+                    $jadwal->id_kelas = $jadwalInfo['id_kelas'];
+                    $jadwal->id_mata_pelajaran = $jadwalInfo['id_mata_pelajaran'];
+                    $jadwal->id_guru = $jadwalInfo['id_guru'];
+                    $jadwal->id_tahun_ajaran = $jadwalInfo['id_tahun_ajaran'];
+                    $jadwal->hari = $jadwalInfo['hari'];
+                    $jadwal->waktu_mulai = $jadwalInfo['waktu_mulai'];
+                    $jadwal->waktu_selesai = $jadwalInfo['waktu_selesai'];
+                    $jadwal->status = $jadwalInfo['status'];
                     $jadwal->dibuat_pada = now();
                     $jadwal->dibuat_oleh = Auth::user()->username ?? 'system';
                     $jadwal->save();
-
-                    $createdJadwals[] = $jadwal;
+                    $createdCount++;
                 }
             }
 
+            $deletedCount = $jadwalsToDelete->count();
+
             DB::commit();
+
+            $message = "Jadwal berhasil diperbarui. ";
+            if ($createdCount > 0) $message .= "Dibuat: {$createdCount}. ";
+            if ($updatedCount > 0) $message .= "Diperbarui: {$updatedCount}. ";
+            if ($deletedCount > 0) $message .= "Dihapus: {$deletedCount}.";
+
             return response()->json([
                 'success' => true,
-                'message' => 'Jadwal massal berhasil dibuat. Total: ' . count($createdJadwals) . ' jadwal.'
+                'message' => $message,
+                'stats' => [
+                    'created' => $createdCount,
+                    'updated' => $updatedCount,
+                    'deleted' => $deletedCount
+                ]
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -515,13 +672,14 @@ class JadwalPelajaranController extends Controller
             ->with(['mataPelajaran', 'guru'])
             ->get();
 
-    // Organize jadwal by day and session
+        // Organize jadwal by day and session
         $jadwalByHariSesi = [];
         foreach ($jadwalList as $jadwal) {
             // Find session number based on time
             foreach (self::SESI_WAKTU as $sesiNum => $sesiData) {
                 if ($jadwal->waktu_mulai == $sesiData['waktu_mulai']) {
                     $jadwalByHariSesi[$jadwal->hari][$sesiNum] = [
+                        'id_jadwal' => $jadwal->id_jadwal,
                         'id_mata_pelajaran' => $jadwal->id_mata_pelajaran,
                         'id_guru' => $jadwal->id_guru,
                         'mata_pelajaran_nama' => $jadwal->mataPelajaran->nama,
@@ -649,5 +807,313 @@ class JadwalPelajaranController extends Controller
             'success' => true,
             'data' => self::SESI_WAKTU
         ]);
+    }
+
+    /**
+     * Check conflicts for multiple schedules.
+     */
+    public function checkConflicts(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_kelas' => 'required|exists:kelas,id_kelas',
+            'hari' => 'required|in:senin,selasa,rabu,kamis,jumat,sabtu',
+            'id_guru' => 'required|exists:guru,id_guru',
+            'sesi' => 'required|array|min:1',
+            'sesi.*' => 'integer|min:1|max:6',
+            'exclude_ids' => 'nullable|array',
+            'exclude_ids.*' => 'integer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $kelas = Kelas::find($request->id_kelas);
+        $tahunAjaranId = $kelas->id_tahun_ajaran;
+
+        if (!$tahunAjaranId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kelas belum memiliki tahun ajaran.'
+            ], 422);
+        }
+
+        $conflicts = $this->checkSessionConflicts(
+            $request->id_kelas,
+            $request->id_guru,
+            $request->hari,
+            $request->sesi,
+            $tahunAjaranId,
+            $request->exclude_ids ?? []
+        );
+
+        return response()->json([
+            'success' => true,
+            'has_conflicts' => !empty($conflicts),
+            'conflicts' => $conflicts
+        ]);
+    }
+
+    /**
+     * Check conflicts for mass schedule.
+     */
+    public function checkConflictsMassal(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_kelas' => 'required|exists:kelas,id_kelas',
+            'jadwal' => 'required|array',
+            'jadwal.*.*' => 'array',
+            'jadwal.*.*.id_mata_pelajaran' => 'nullable|exists:mata_pelajaran,id_mata_pelajaran',
+            'jadwal.*.*.id_guru' => 'nullable|exists:guru,id_guru',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $kelas = Kelas::find($request->id_kelas);
+        $tahunAjaranId = $kelas->id_tahun_ajaran;
+
+        if (!$tahunAjaranId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kelas belum memiliki tahun ajaran.'
+            ], 422);
+        }
+
+        $allConflicts = [];
+        $jadwalData = $request->jadwal;
+
+        foreach ($jadwalData as $hari => $sesiData) {
+            foreach ($sesiData as $sesi => $data) {
+                if (empty($data['id_mata_pelajaran']) || empty($data['id_guru'])) {
+                    continue;
+                }
+
+                $conflicts = $this->checkSessionConflicts(
+                    $request->id_kelas,
+                    $data['id_guru'],
+                    $hari,
+                    [$sesi],
+                    $tahunAjaranId
+                );
+
+                if (!empty($conflicts)) {
+                    $allConflicts["{$hari}_{$sesi}"] = $conflicts;
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'has_conflicts' => !empty($allConflicts),
+            'conflicts' => $allConflicts
+        ]);
+    }
+
+    /**
+     * Get jadwal statistics for dashboard.
+     */
+    public function getStatistics()
+    {
+        $tahunAjaranAktif = TahunAjaran::where('aktif', true)->first();
+        
+        if (!$tahunAjaranAktif) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada tahun ajaran aktif.'
+            ]);
+        }
+
+        $totalJadwal = Jadwal::where('id_tahun_ajaran', $tahunAjaranAktif->id_tahun_ajaran)
+            ->where('status', 'aktif')
+            ->count();
+
+        $totalKelas = Kelas::where('id_tahun_ajaran', $tahunAjaranAktif->id_tahun_ajaran)->count();
+        $totalGuru = Guru::where('status', 'aktif')->count();
+        $totalMataPelajaran = MataPelajaran::count();
+
+        // Jadwal per hari
+        $jadwalPerHari = [];
+        foreach (self::HARI_LIST as $hari) {
+            $jadwalPerHari[$hari] = Jadwal::where('id_tahun_ajaran', $tahunAjaranAktif->id_tahun_ajaran)
+                ->where('hari', $hari)
+                ->where('status', 'aktif')
+                ->count();
+        }
+
+        // Kelas dengan jadwal terlengkap
+        $kelasStats = Kelas::where('id_tahun_ajaran', $tahunAjaranAktif->id_tahun_ajaran)
+            ->withCount(['jadwal' => function($query) {
+                $query->where('status', 'aktif');
+            }])
+            ->orderBy('jadwal_count', 'desc')
+            ->limit(5)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'total_jadwal' => $totalJadwal,
+                'total_kelas' => $totalKelas,
+                'total_guru' => $totalGuru,
+                'total_mata_pelajaran' => $totalMataPelajaran,
+                'jadwal_per_hari' => $jadwalPerHari,
+                'kelas_stats' => $kelasStats,
+                'tahun_ajaran_aktif' => $tahunAjaranAktif->nama_tahun_ajaran
+            ]
+        ]);
+    }
+
+    /**
+     * Export jadwal to PDF.
+     */
+    public function exportPdf(Request $request)
+    {
+        // Implementation for PDF export
+        // This would require a PDF library like DomPDF or TCPDF
+        return response()->json([
+            'success' => false,
+            'message' => 'Fitur export PDF belum diimplementasikan.'
+        ]);
+    }
+
+    /**
+     * Export jadwal to Excel.
+     */
+    public function exportExcel(Request $request)
+    {
+        // Implementation for Excel export
+        // This would require Laravel Excel package
+        return response()->json([
+            'success' => false,
+            'message' => 'Fitur export Excel belum diimplementasikan.'
+        ]);
+    }
+
+    /**
+     * Import jadwal from Excel.
+     */
+    public function importExcel(Request $request)
+    {
+        // Implementation for Excel import
+        // This would require Laravel Excel package
+        return response()->json([
+            'success' => false,
+            'message' => 'Fitur import Excel belum diimplementasikan.'
+        ]);
+    }
+
+    /**
+     * Copy jadwal from another class.
+     */
+    public function copyFromClass(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'source_class_id' => 'required|exists:kelas,id_kelas',
+            'target_class_id' => 'required|exists:kelas,id_kelas',
+            'overwrite' => 'boolean'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $sourceClass = Kelas::find($request->source_class_id);
+        $targetClass = Kelas::find($request->target_class_id);
+
+        if ($sourceClass->id_tahun_ajaran !== $targetClass->id_tahun_ajaran) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kelas sumber dan target harus dalam tahun ajaran yang sama.'
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Get source jadwal
+            $sourceJadwals = Jadwal::where('id_kelas', $request->source_class_id)
+                ->where('status', 'aktif')
+                ->get();
+
+            if ($sourceJadwals->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kelas sumber tidak memiliki jadwal.'
+                ], 422);
+            }
+
+            // If overwrite, delete existing jadwal in target class
+            if ($request->overwrite) {
+                Jadwal::where('id_kelas', $request->target_class_id)
+                    ->where('status', 'aktif')
+                    ->delete();
+            }
+
+            $copiedCount = 0;
+            $conflicts = [];
+
+            foreach ($sourceJadwals as $sourceJadwal) {
+                // Check for conflicts in target class
+                $conflict = Jadwal::where('id_kelas', $request->target_class_id)
+                    ->where('hari', $sourceJadwal->hari)
+                    ->where('waktu_mulai', $sourceJadwal->waktu_mulai)
+                    ->where('status', 'aktif')
+                    ->first();
+
+                if ($conflict && !$request->overwrite) {
+                    $conflicts[] = "Konflik pada hari {$sourceJadwal->hari} jam {$sourceJadwal->waktu_mulai}";
+                    continue;
+                }
+
+                // Create new jadwal
+                $newJadwal = new Jadwal();
+                $newJadwal->id_kelas = $request->target_class_id;
+                $newJadwal->id_mata_pelajaran = $sourceJadwal->id_mata_pelajaran;
+                $newJadwal->id_guru = $sourceJadwal->id_guru;
+                $newJadwal->id_tahun_ajaran = $sourceJadwal->id_tahun_ajaran;
+                $newJadwal->hari = $sourceJadwal->hari;
+                $newJadwal->waktu_mulai = $sourceJadwal->waktu_mulai;
+                $newJadwal->waktu_selesai = $sourceJadwal->waktu_selesai;
+                $newJadwal->status = 'aktif';
+                $newJadwal->dibuat_pada = now();
+                $newJadwal->dibuat_oleh = Auth::user()->username ?? 'system';
+                $newJadwal->save();
+
+                $copiedCount++;
+            }
+
+            DB::commit();
+
+            $message = "Berhasil menyalin {$copiedCount} jadwal.";
+            if (!empty($conflicts)) {
+                $message .= " Terdapat " . count($conflicts) . " konflik yang dilewati.";
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'copied_count' => $copiedCount,
+                'conflicts' => $conflicts
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyalin jadwal: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
