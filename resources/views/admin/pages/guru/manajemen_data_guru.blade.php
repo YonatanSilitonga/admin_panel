@@ -73,55 +73,57 @@
 <!-- Tabel Data Guru -->
 <h5 class="mb-3">Daftar Guru Pengajar</h5>
 <div class="table-responsive">
-    <table id="guruTable" class="table table-striped table-bordered table-sm">
-        <thead class="bg-success text-white">
-            <tr>
-                <th class="text-center" style="min-width: 20px;">No</th>
-                <th style="min-width: 100px;">Nama Lengkap</th>
-                <th style="min-width: 100px;">NIP</th>
-                <th style="min-width: 250px;">Bidang Studi</th>
-                <th class="text-center" style="min-width: 100px;">Status</th>
-                <th class="text-center" style="min-width: 100px;">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($gurus as $index => $guru)
+    @if($gurus->isEmpty())
+        <div class="alert alert-info mb-0">
+            <i class="bi bi-info-circle me-2"></i> Tidak ada data guru.
+        </div>
+    @else
+        <table id="guruTable" class="table table-striped table-bordered table-sm w-100 align-middle">
+            <thead class="bg-success text-white">
                 <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $guru->nama_lengkap ?? '-' }}</td>
-                    <td>{{ $guru->nip ?? '-' }}</td>
-                    <td>
-    {{ $guru->bidang_studi ?? '-' }}
-</td>
-
-                    <td class="text-center">
-                        @if($guru->status == 'aktif')
-                            <span class="badge bg-success">Aktif</span>
-                        @else
-                            <span class="badge bg-secondary">Non-Aktif</span>
-                        @endif
-                    </td>
-                    <td class="text-center">
-                        <div class="d-flex justify-content-center gap-2">
-                            <a href="javascript:void(0);" class="text-primary btn-view-guru"
-                                data-id="{{ $guru->id_guru }}" data-bs-toggle="modal"
-                                data-bs-target="#modalViewGuru" title="Lihat">
-                                <i class="bi bi-eye-fill fs-5"></i>
-                            </a>
-
-                            <a href="{{ url('guru/' . $guru->id_guru . '/edit') }}" class="text-warning" title="Edit">
-                                <i class="bi bi-pencil-square fs-5"></i>
-                            </a>
-                        </div>
-                    </td>
+                    <th width="5%" class="text-center">No</th>
+                    <th width="25%">Nama Lengkap</th>
+                    <th width="15%">NIP</th>
+                    <th width="30%">Bidang Studi</th>
+                    <th width="10%" class="text-center">Status</th>
+                    <th width="15%" class="text-center">Aksi</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="text-center">Tidak ada data guru.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach ($gurus as $index => $guru)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>{{ $guru->nama_lengkap ?? '-' }}</td>
+                        <td>{{ $guru->nip ?? '-' }}</td>
+                        <td>{{ $guru->bidang_studi ?? '-' }}</td>
+                        <td class="text-center">
+                            @if($guru->status == 'aktif')
+                                <span class="badge bg-success">Aktif</span>
+                            @else
+                                <span class="badge bg-secondary">Non-Aktif</span>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="javascript:void(0);" class="text-primary btn-view-guru"
+                                   data-id="{{ $guru->id_guru }}"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#modalViewGuru"
+                                   title="Lihat">
+                                    <i class="bi bi-eye-fill fs-5"></i>
+                                </a>
+                                <a href="{{ url('guru/' . $guru->id_guru . '/edit') }}"
+                                   class="text-warning"
+                                   title="Edit">
+                                    <i class="bi bi-pencil-square fs-5"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 </div>
 
 
@@ -143,11 +145,6 @@
 
                         <dt class="col-sm-4">Nomor Telepon</dt>
                         <dd class="col-sm-8" id="view-telepon">-</dd>
-                        
-                        <!-- <dt class="col-sm-4">Mata Pelajaran</dt>
-                        <dd class="col-sm-8">
-                            <span id="view-mata-pelajaran" class="fw-medium">-</span>
-                        </dd> -->
 
                         <dt class="col-sm-4">Status</dt>
                         <dd class="col-sm-8" id="view-status">-</dd>

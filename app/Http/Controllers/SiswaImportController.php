@@ -364,7 +364,7 @@ class SiswaImportController extends Controller
             
             $catatan = [
                 '• HAPUS BARIS CONTOH (baris 2-3) sebelum mengimport data asli',
-                '• NIS harus dalam format TEXT, bukan angka',
+                // '• NIS harus dalam format TEXT, bukan angka',
                 '• Pastikan tidak ada baris kosong di antara data',
                 '• Status siswa akan otomatis ditentukan berdasarkan status tahun ajaran kelas',
                 '• Pastikan nama kelas dan nama orang tua ditulis PERSIS seperti di daftar',

@@ -17,7 +17,7 @@ class KelasSeeder extends Seeder
             [
                 'id_kelas' => 1,
                 'nama_kelas' => '7A',
-                'tingkat' => '7',
+                'tingkat' => '1',
                 'id_guru' => 1,
                 'id_tahun_ajaran' => 1,
                 'dibuat_pada' => Carbon::now(),
@@ -28,7 +28,7 @@ class KelasSeeder extends Seeder
             [
                 'id_kelas' => 2,
                 'nama_kelas' => '7B',
-                'tingkat' => '7',
+                'tingkat' => '1',
                 'id_guru' => 2,
                 'id_tahun_ajaran' => 1,
                 'dibuat_pada' => Carbon::now(),
@@ -39,7 +39,7 @@ class KelasSeeder extends Seeder
             [
                 'id_kelas' => 3,
                 'nama_kelas' => '8A',
-                'tingkat' => '8',
+                'tingkat' => '2',
                 'id_guru' => 3,
                 'id_tahun_ajaran' => 1,
                 'dibuat_pada' => Carbon::now(),

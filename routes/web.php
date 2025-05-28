@@ -90,7 +90,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/jadwal-pelajaran/check-conflicts', [JadwalPelajaranController::class, 'checkConflicts']);
     Route::post('/jadwal-pelajaran/check-conflicts-massal', [JadwalPelajaranController::class, 'checkConflictsMassal']);
     Route::get('/jadwal-pelajaran/guru-by-mapel/{idMataPelajaran}', [JadwalPelajaranController::class, 'getGuruByMataPelajaran']);
-    
+        // Jadwal Pelajaran
+    Route::resource('jadwal-pelajaran', JadwalPelajaranController::class);
+    Route::get('/jadwal-pelajaran/guru-by-mapel/{idMataPelajaran}', [JadwalPelajaranController::class, 'getGuruByMataPelajaran']);
+    Route::resource('jadwal-pelajaran', JadwalPelajaranController::class);
+Route::get('/jadwal-pelajaran/guru-by-mapel/{idMataPelajaran}', [JadwalPelajaranController::class, 'getGuruByMataPelajaran']);
+Route::post('/jadwal-pelajaran/store-massal', [JadwalPelajaranController::class, 'storeMassal']);
+Route::get('/jadwal-pelajaran/kelas/{kelasId}', [JadwalPelajaranController::class, 'getJadwalByKelas']);
+
     // Absensi
     Route::resource('absensi', AbsensiController::class);
     Route::get('/absensi/siswa/{siswaId}', [AbsensiController::class, 'getBySiswa']);
