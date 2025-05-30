@@ -1,234 +1,348 @@
 /* admin css */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
-/* ===== SCHEDULE GRID STYLES ===== */
+/* ===== COMPACT WEEKLY SCHEDULE VIEW ===== */
 
-/* Schedule Grid Container */
-.schedule-grid-container {
+/* Weekly Schedule View */
+.weekly-schedule-view {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(23, 77, 56, 0.1);
   overflow: hidden;
   margin-bottom: 2rem;
-  border: 1px solid #EDE8D0;
+  border: 1px solid #ede8d0;
 }
 
-.schedule-grid-header {
-  background: linear-gradient(135deg, #174D38 0%, #1E5631 100%);
+/* Header */
+.weekly-header {
+  background: linear-gradient(135deg, #174d38 0%, #1e5631 100%);
   color: white;
-  padding: 1.5rem 2rem;
-}
-
-.schedule-grid-header h5 {
-  font-weight: 600;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-}
-
-.schedule-legend {
+  padding: 1.25rem 2rem;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
-.legend-item {
-  display: flex;
+.header-left {
+  flex: 0 0 auto;
+}
+
+.header-center {
+  flex: 1;
+  text-align: center;
+  min-width: 280px;
+}
+
+.header-right {
+  flex: 0 0 auto;
+}
+
+.btn-back {
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.85rem;
-  font-family: 'Poppins', sans-serif;
+  padding: 0.625rem 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-family: "Poppins", sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.9rem;
 }
 
-.legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.legend-dot.filled {
-  background: #28a745;
+.btn-back i {
+  font-size: 1.1rem;
 }
 
-.legend-dot.empty {
-  background: rgba(255, 255, 255, 0.3);
+.schedule-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
 }
 
-/* Schedule Grid Table */
+.class-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
 
-.schedule-grid-table {
+.class-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.4rem 0.875rem;
+  border-radius: 18px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  font-family: "Poppins", sans-serif;
+}
+
+.academic-year {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.625rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  opacity: 0.9;
+  font-family: "Poppins", sans-serif;
+}
+
+.btn-manage {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.9rem;
+}
+
+.btn-manage:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Compact Schedule Container */
+.compact-schedule-container {
+  padding: 0;
+  background: white;
+}
+
+.compact-schedule-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 0.9rem;
-  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-family: "Poppins", sans-serif;
+  margin: 0;
 }
 
-.schedule-grid-table thead th {
-  background: #174D38;
+.compact-schedule-table thead th {
+  background: #174d38;
   color: white;
-  padding: 1rem 0.75rem;
+  padding: 0.75rem 0.5rem;
   text-align: center;
   border: none;
   font-weight: 600;
   position: sticky;
   top: 0;
   z-index: 10;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
-.session-header {
-  width: 80px;
-  background: #1E5631;
+.time-col {
+  width: 110px;
+  background: #1e5631;
 }
 
-.time-header {
-  width: 120px;
-  background: #1E5631;
+.day-col {
+  width: calc((100% - 110px) / 6);
+  min-width: 140px;
+  background: #174d38;
 }
 
-.day-header {
-  min-width: 200px;
-  background: #174D38;
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
 }
 
-/* Grid Cells */
-.schedule-grid-table tbody tr:hover {
-  background: rgba(52, 152, 219, 0.05);
-  transition: background 0.3s ease;
+.header-content i {
+  font-size: 0.9rem;
+  opacity: 0.8;
 }
 
-.session-cell {
-  background: #EDE8D0;
+.header-content span {
+  font-size: 0.85rem;
+}
+
+/* Schedule Rows */
+.schedule-row {
+  transition: background-color 0.2s ease;
+}
+
+.schedule-row:hover {
+  background: rgba(23, 77, 56, 0.03);
+}
+
+.schedule-row:nth-child(even) {
+  background: rgba(237, 232, 208, 0.2);
+}
+
+.schedule-row:nth-child(even):hover {
+  background: rgba(23, 77, 56, 0.05);
+}
+
+/* Time Cell */
+.time-cell {
+  background: #ede8d0;
   text-align: center;
-  padding: 1rem 0.75rem;
-  border-right: 2px solid #CBD2DC;
+  padding: 0.75rem 0.5rem;
+  border-right: 2px solid #cbd2dc;
   vertical-align: middle;
 }
 
-.session-number {
-  width: 40px;
-  height: 40px;
-  background: #174D38;
+.time-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+}
+
+.session-badge {
+  width: 26px;
+  height: 26px;
+  background: #174d38;
   color: white;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1.1rem;
-  margin: 0 auto;
-  font-family: 'Poppins', sans-serif;
-}
-
-.time-cell {
-  background: #EDE8D0;
-  text-align: center;
-  padding: 1rem 0.75rem;
-  border-right: 2px solid #CBD2DC;
-  vertical-align: middle;
+  font-size: 0.8rem;
+  font-family: "Poppins", sans-serif;
 }
 
 .time-range {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  line-height: 1.1;
 }
 
-.time-start {
-  font-weight: 700;
-  color: #174D38;
-  font-size: 0.95rem;
-  font-family: 'Poppins', sans-serif;
+.time-range span {
+  font-weight: 600;
+  color: #174d38;
+  font-size: 0.8rem;
+  font-family: "Poppins", sans-serif;
 }
 
-.time-separator {
-  color: #9898A3;
-  font-weight: 300;
+.time-range small {
+  color: #9898a3;
+  font-size: 0.7rem;
+  font-family: "Poppins", sans-serif;
 }
 
-.time-end {
-  color: #9898A3;
-  font-size: 0.85rem;
-  font-family: 'Poppins', sans-serif;
-}
-
-.schedule-grid-cell {
-  padding: 1rem;
-  vertical-align: top;
-  border-bottom: 1px solid #CBD2DC;
+/* Subject Cell */
+.subject-cell {
+  padding: 0.625rem 0.5rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #ede8d0;
   position: relative;
-  min-height: 120px;
+  text-align: center;
 }
 
-.schedule-grid-cell.filled {
+.subject-cell.filled {
   background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
 }
 
-.schedule-grid-cell.empty {
+.subject-cell.empty {
   background: #f8f9fa;
 }
 
-/* Schedule Item */
-.schedule-item {
+.subject-info {
+  padding: 0.5rem;
+  border-radius: 6px;
   background: white;
-  border-radius: 8px;
-  padding: 0.75rem;
-  border: 2px solid #174D38;
-  box-shadow: 0 2px 8px rgba(23, 77, 56, 0.15);
-  height: 100%;
+  border: 1px solid #28a745;
+  transition: all 0.2s ease;
+  min-height: 55px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+}
+
+.subject-info:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(40, 167, 69, 0.2);
+  border-color: #174d38;
 }
 
 .subject-name {
   font-weight: 600;
-  color: #174D38;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-  line-height: 1.3;
-  font-family: 'Poppins', sans-serif;
+  color: #174d38;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+  font-family: "Poppins", sans-serif;
 }
 
 .teacher-name {
-  color: #9898A3;
-  font-size: 0.8rem;
-  margin-bottom: 0.75rem;
-  line-height: 1.2;
-  font-family: 'Poppins', sans-serif;
+  color: #6c757d;
+  font-size: 0.7rem;
+  line-height: 1.1;
+  font-family: "Poppins", sans-serif;
 }
 
-.schedule-actions {
+.empty-info {
+  padding: 0.5rem;
+  min-height: 55px;
   display: flex;
-  gap: 0.25rem;
-  justify-content: center;
-}
-
-.schedule-actions .btn {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  border-radius: 6px;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* Empty Slot */
-.empty-slot {
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  color: #9898A3;
-  font-size: 0.85rem;
-  opacity: 0.7;
-  font-family: 'Poppins', sans-serif;
 }
 
-.empty-slot i {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+.empty-text {
+  color: #9898a3;
+  font-size: 1.1rem;
+  font-weight: 300;
 }
+
+/* Schedule Summary */
+.schedule-summary {
+  background: #f8f9fa;
+  padding: 1.25rem 2rem;
+  border-top: 1px solid #ede8d0;
+}
+
+.summary-card {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.summary-item {
+  text-align: center;
+}
+
+.summary-number {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #174d38;
+  margin-bottom: 0.25rem;
+  font-family: "Poppins", sans-serif;
+}
+
+.summary-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ===== EXISTING STYLES (MODAL, CLASS CARDS, ETC.) ===== */
 
 /* All Classes View */
 .all-classes-view {
@@ -242,7 +356,7 @@
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
-  border: 1px solid #EDE8D0;
+  border: 1px solid #ede8d0;
 }
 
 .class-card:hover {
@@ -251,7 +365,7 @@
 }
 
 .class-card-header {
-  background: linear-gradient(135deg, #174D38 0%, #1E5631 100%);
+  background: linear-gradient(135deg, #174d38 0%, #1e5631 100%);
   color: white;
   padding: 1.5rem;
   display: flex;
@@ -263,7 +377,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .progress-circle-small {
@@ -281,7 +395,7 @@
   font-size: 0.85rem;
   font-weight: 700;
   color: white;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .class-card-body {
@@ -297,7 +411,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0;
-  border-bottom: 1px solid #EDE8D0;
+  border-bottom: 1px solid #ede8d0;
 }
 
 .stat-item:last-child {
@@ -306,15 +420,15 @@
 
 .stat-label {
   font-size: 0.85rem;
-  color: #9898A3;
+  color: #9898a3;
   font-weight: 500;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .stat-value {
   font-weight: 600;
-  color: #174D38;
-  font-family: 'Poppins', sans-serif;
+  color: #174d38;
+  font-family: "Poppins", sans-serif;
 }
 
 .class-actions {
@@ -327,12 +441,12 @@
   font-size: 0.85rem;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .class-actions .btn-outline-primary {
-  border-color: #174D38;
-  color: #174D38;
+  border-color: #174d38;
+  color: #174d38;
 }
 
 .class-actions .btn-outline-primary:hover {
@@ -342,20 +456,20 @@
 }
 
 .class-actions .btn-primary {
-  background-color: #174D38;
-  border-color: #174D38;
+  background-color: #174d38;
+  border-color: #174d38;
 }
 
 .class-actions .btn-primary:hover {
-  background-color: #1E5631;
-  border-color: #1E5631;
+  background-color: #1e5631;
+  border-color: #1e5631;
 }
 
 /* ===== MODAL JADWAL MASSAL STYLES ===== */
 
 /* Modal Header */
 .schedule-modal-header {
-  background: linear-gradient(135deg, #174D38 0%, #1E5631 100%);
+  background: linear-gradient(135deg, #174d38 0%, #1e5631 100%);
   color: white;
   padding: 1.5rem 2rem;
   border-bottom: none;
@@ -376,13 +490,13 @@
 .modal-title-group .modal-title {
   font-size: 1.5rem;
   font-weight: 600;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .modal-subtitle {
   opacity: 0.9;
   font-size: 0.9rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Modal Body */
@@ -403,7 +517,7 @@
   overflow: hidden;
   height: 100%;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid #EDE8D0;
+  border: 1px solid #ede8d0;
 }
 
 .control-card:hover {
@@ -412,20 +526,20 @@
 }
 
 .control-card-header {
-  background: linear-gradient(135deg, #EDE8D0 0%, #CBD2DC 100%);
+  background: linear-gradient(135deg, #ede8d0 0%, #cbd2dc 100%);
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #CBD2DC;
+  border-bottom: 1px solid #cbd2dc;
   display: flex;
   align-items: center;
   font-weight: 600;
-  color: #174D38;
-  font-family: 'Poppins', sans-serif;
+  color: #174d38;
+  font-family: "Poppins", sans-serif;
 }
 
 .control-card-header i {
   margin-right: 0.75rem;
   font-size: 1.1rem;
-  color: #174D38;
+  color: #174d38;
 }
 
 .control-card-body {
@@ -435,24 +549,24 @@
 /* Class Selection Card */
 .class-selection-card .control-card-header {
   background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  color: #174D38;
+  color: #174d38;
 }
 
 .class-selection-card .control-card-header i {
-  color: #174D38;
+  color: #174d38;
 }
 
 .schedule-select {
-  border: 2px solid #EDE8D0;
+  border: 2px solid #ede8d0;
   border-radius: 8px;
   padding: 0.75rem 1rem;
   font-size: 0.95rem;
   transition: all 0.3s ease;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .schedule-select:focus {
-  border-color: #174D38;
+  border-color: #174d38;
   box-shadow: 0 0 0 0.2rem rgba(23, 77, 56, 0.25);
 }
 
@@ -466,17 +580,17 @@
   gap: 0.5rem;
   font-weight: 500;
   color: #155724;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Actions Card */
 .actions-card .control-card-header {
   background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-  color: #174D38;
+  color: #174d38;
 }
 
 .actions-card .control-card-header i {
-  color: #174D38;
+  color: #174d38;
 }
 
 .action-buttons {
@@ -496,12 +610,12 @@
   font-weight: 500;
   transition: all 0.3s ease;
   text-decoration: none;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .clear-btn {
-  border-color: #174D38;
-  color: #174D38;
+  border-color: #174d38;
+  color: #174d38;
 }
 
 .clear-btn:hover:not(:disabled) {
@@ -519,11 +633,11 @@
 /* Stats Card */
 .stats-card .control-card-header {
   background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-  color: #174D38;
+  color: #174d38;
 }
 
 .stats-card .control-card-header i {
-  color: #174D38;
+  color: #174d38;
 }
 
 .stats-container {
@@ -536,7 +650,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: conic-gradient(#28a745 0deg, #EDE8D0 0deg);
+  background: conic-gradient(#28a745 0deg, #ede8d0 0deg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -544,7 +658,7 @@
 }
 
 .progress-circle::before {
-  content: '';
+  content: "";
   width: 60px;
   height: 60px;
   background: white;
@@ -555,9 +669,9 @@
 .progress-value {
   font-size: 1rem;
   font-weight: 700;
-  color: #174D38;
+  color: #174d38;
   z-index: 1;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .stats-details {
@@ -569,7 +683,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0;
-  border-bottom: 1px solid #EDE8D0;
+  border-bottom: 1px solid #ede8d0;
 }
 
 .stat-item:last-child {
@@ -579,7 +693,7 @@
 .stat-number {
   font-size: 1.25rem;
   font-weight: 700;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .stat-item.filled .stat-number {
@@ -587,15 +701,15 @@
 }
 
 .stat-item.empty .stat-number {
-  color: #9898A3;
+  color: #9898a3;
 }
 
 .stat-label {
   font-size: 0.85rem;
-  color: #9898A3;
+  color: #9898a3;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Schedule Table Section */
@@ -605,11 +719,11 @@
   box-shadow: 0 8px 32px rgba(23, 77, 56, 0.1);
   overflow: hidden;
   margin-bottom: 2rem;
-  border: 1px solid #EDE8D0;
+  border: 1px solid #ede8d0;
 }
 
 .schedule-table-header {
-  background: linear-gradient(135deg, #174D38 0%, #1E5631 100%);
+  background: linear-gradient(135deg, #174d38 0%, #1e5631 100%);
   color: white;
   padding: 1.5rem 2rem;
   display: flex;
@@ -627,7 +741,7 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .class-badge {
@@ -636,7 +750,7 @@
   border-radius: 20px;
   font-weight: 500;
   font-size: 0.9rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .table-legend {
@@ -649,7 +763,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.85rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .legend-color {
@@ -663,7 +777,7 @@
 }
 
 .legend-color.empty {
-  background: #EDE8D0;
+  background: #ede8d0;
 }
 
 .schedule-table {
@@ -671,11 +785,11 @@
   border-collapse: separate;
   border-spacing: 0;
   font-size: 0.9rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .table-header-row {
-  background: #174D38;
+  background: #174d38;
   color: white;
   position: sticky;
   top: 0;
@@ -688,7 +802,7 @@
   border: none;
   font-weight: 600;
   white-space: nowrap;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .header-content {
@@ -705,17 +819,17 @@
 
 .session-column {
   width: 100px;
-  background: #1E5631;
+  background: #1e5631;
 }
 
 .time-column {
   width: 120px;
-  background: #1E5631;
+  background: #1e5631;
 }
 
 .day-column {
   min-width: 220px;
-  background: #174D38;
+  background: #174d38;
 }
 
 /* Schedule Rows */
@@ -729,10 +843,10 @@
 
 /* Session Cell */
 .session-cell {
-  background: #EDE8D0;
+  background: #ede8d0;
   text-align: center;
   padding: 1rem 0.75rem;
-  border-right: 2px solid #CBD2DC;
+  border-right: 2px solid #cbd2dc;
   vertical-align: middle;
 }
 
@@ -746,7 +860,7 @@
 .session-number {
   width: 40px;
   height: 40px;
-  background: #174D38;
+  background: #174d38;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -754,15 +868,15 @@
   justify-content: center;
   font-weight: 700;
   font-size: 1.1rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Time Cell */
 .time-cell {
-  background: #EDE8D0;
+  background: #ede8d0;
   text-align: center;
   padding: 1rem 0.75rem;
-  border-right: 2px solid #CBD2DC;
+  border-right: 2px solid #cbd2dc;
   vertical-align: middle;
 }
 
@@ -775,27 +889,27 @@
 
 .time-start {
   font-weight: 700;
-  color: #174D38;
+  color: #174d38;
   font-size: 0.95rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .time-separator {
-  color: #9898A3;
+  color: #9898a3;
   font-weight: 300;
 }
 
 .time-end {
-  color: #9898A3;
+  color: #9898a3;
   font-size: 0.85rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Schedule Cell */
 .schedule-cell {
   padding: 1rem;
   vertical-align: top;
-  border-bottom: 1px solid #CBD2DC;
+  border-bottom: 1px solid #cbd2dc;
   position: relative;
 }
 
@@ -805,7 +919,7 @@
   border-radius: 8px;
   padding: 0.75rem;
   background: #f8f9fa;
-  border: 2px solid #EDE8D0;
+  border: 2px solid #ede8d0;
   transition: all 0.3s ease;
 }
 
@@ -819,18 +933,20 @@
   border-color: #28a745;
 }
 
-.subject-select, .teacher-select {
-  border: 1px solid #CBD2DC;
+.subject-select,
+.teacher-select {
+  border: 1px solid #cbd2dc;
   border-radius: 6px;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
   background: white;
   transition: all 0.3s ease;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
-.subject-select:focus, .teacher-select:focus {
-  border-color: #174D38;
+.subject-select:focus,
+.teacher-select:focus {
+  border-color: #174d38;
   box-shadow: 0 0 0 0.1rem rgba(23, 77, 56, 0.25);
 }
 
@@ -846,14 +962,14 @@
 }
 
 .status-indicator.existing {
-  color: #174D38;
+  color: #174d38;
   font-size: 1.2rem;
 }
 
 .clear-selection-btn .btn {
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .existing-schedule-actions .btn {
@@ -864,7 +980,7 @@
 /* Modal Footer */
 .schedule-modal-footer {
   background: white;
-  border-top: 1px solid #CBD2DC;
+  border-top: 1px solid #cbd2dc;
   padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -875,9 +991,9 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #9898A3;
+  color: #9898a3;
   font-size: 0.9rem;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .footer-actions {
@@ -885,7 +1001,8 @@
   gap: 1rem;
 }
 
-.btn-cancel, .btn-save {
+.btn-cancel,
+.btn-save {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -893,12 +1010,12 @@
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.3s ease;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .btn-cancel {
-  background: #9898A3;
-  border-color: #9898A3;
+  background: #9898a3;
+  border-color: #9898a3;
   color: white;
 }
 
@@ -909,19 +1026,19 @@
 }
 
 .btn-save {
-  background: linear-gradient(135deg, #174D38 0%, #1E5631 100%);
+  background: linear-gradient(135deg, #174d38 0%, #1e5631 100%);
   border: none;
   color: white;
 }
 
 .btn-save:hover:not(:disabled) {
-  background: linear-gradient(135deg, #1E5631 0%, #174D38 100%);
+  background: linear-gradient(135deg, #1e5631 0%, #174d38 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(23, 77, 56, 0.3);
 }
 
 .btn-save:disabled {
-  background: #9898A3;
+  background: #9898a3;
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -950,26 +1067,26 @@
 
 .spinner-text {
   font-weight: 500;
-  color: #174D38;
-  font-family: 'Poppins', sans-serif;
+  color: #174d38;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Custom Button Styles */
 .btn-primary {
-  background-color: #174D38;
-  border-color: #174D38;
-  font-family: 'Poppins', sans-serif;
+  background-color: #174d38;
+  border-color: #174d38;
+  font-family: "Poppins", sans-serif;
 }
 
 .btn-primary:hover {
-  background-color: #1E5631;
-  border-color: #1E5631;
+  background-color: #1e5631;
+  border-color: #1e5631;
 }
 
 .btn-outline-primary {
-  border-color: #174D38;
-  color: #174D38;
-  font-family: 'Poppins', sans-serif;
+  border-color: #174d38;
+  color: #174d38;
+  font-family: "Poppins", sans-serif;
 }
 
 .btn-outline-primary:hover {
@@ -979,8 +1096,8 @@
 }
 
 .btn-outline-info {
-  border-color: #174D38;
-  color: #174D38;
+  border-color: #174d38;
+  color: #174d38;
 }
 
 .btn-outline-info:hover {
@@ -1013,80 +1130,177 @@
 
 /* Form Controls */
 .form-select {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .form-label {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
-  color: #174D38;
+  color: #174d38;
 }
 
-/* Responsive Design */
+/* Responsive Design for Compact View */
 @media (max-width: 1200px) {
-  .day-column {
-    min-width: 180px;
+  .day-col {
+    min-width: 120px;
   }
-  
-  .jadwal-cell {
-    min-height: 80px;
-    padding: 0.5rem;
+
+  .subject-name {
+    font-size: 0.75rem;
+  }
+
+  .teacher-name {
+    font-size: 0.65rem;
+  }
+
+  .time-col {
+    width: 100px;
+  }
+}
+
+@media (max-width: 992px) {
+  .weekly-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .header-left,
+  .header-right {
+    order: 2;
+  }
+
+  .header-center {
+    order: 1;
+    min-width: auto;
+  }
+
+  .class-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .summary-card {
+    gap: 2rem;
+  }
+
+  .schedule-title {
+    font-size: 1.2rem;
   }
 }
 
 @media (max-width: 768px) {
-  .schedule-modal-body {
+  .weekly-header {
     padding: 1rem;
   }
-  
-  .schedule-control-section .row {
-    flex-direction: column;
+
+  .btn-back,
+  .btn-manage {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.85rem;
   }
-  
-  .stats-container {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .table-legend {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .day-column {
-    min-width: 150px;
-  }
-  
-  .jadwal-cell {
-    min-height: 70px;
-    padding: 0.5rem;
-  }
-  
-  .subject-select, .teacher-select {
+
+  .compact-schedule-table {
     font-size: 0.8rem;
-    padding: 0.4rem 0.6rem;
+  }
+
+  .time-col {
+    width: 90px;
+  }
+
+  .day-col {
+    min-width: 100px;
+  }
+
+  .session-badge {
+    width: 22px;
+    height: 22px;
+    font-size: 0.75rem;
+  }
+
+  .time-info {
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .subject-info {
+    min-height: 50px;
+    padding: 0.4rem;
+  }
+
+  .subject-name {
+    font-size: 0.7rem;
+  }
+
+  .teacher-name {
+    font-size: 0.6rem;
+  }
+
+  .summary-card {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .summary-number {
+    font-size: 1.5rem;
+  }
+
+  .schedule-summary {
+    padding: 1rem;
   }
 }
 
 @media (max-width: 576px) {
-  .modal-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
+  .weekly-header {
+    padding: 0.875rem;
   }
-  
-  .modal-title {
-    font-size: 1.2rem;
+
+  .btn-back span,
+  .btn-manage span {
+    display: none;
   }
-  
-  
-  .footer-actions {
-    flex-direction: column;
-    width: 100%;
+
+  .compact-schedule-table thead th {
+    padding: 0.5rem 0.25rem;
   }
-  
-  .btn-cancel, .btn-save {
-    width: 100%;
-    justify-content: center;
+
+  .header-content span {
+    font-size: 0.75rem;
+  }
+
+  .time-cell,
+  .subject-cell {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .subject-info {
+    min-height: 45px;
+    padding: 0.3rem;
+  }
+
+  .subject-name {
+    font-size: 0.65rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .teacher-name {
+    font-size: 0.55rem;
+  }
+
+  .time-col {
+    width: 80px;
+  }
+
+  .day-col {
+    min-width: 85px;
+  }
+
+  .time-range span {
+    font-size: 0.7rem;
+  }
+
+  .time-range small {
+    font-size: 0.6rem;
   }
 }

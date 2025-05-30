@@ -14,7 +14,7 @@
             <!-- Header Judul -->
             <header class="judul">
                 <h1 class="mb-3">Manajemen Jadwal Pelajaran</h1>
-                <p class="mb-2">Kelola jadwal pelajaran untuk semua kelas dengan tampilan grid mingguan yang mudah dipahami</p>
+                <p class="mb-2">Halaman untuk mengelola Jadwal Pelajaran</p>
             </header>
 
             <div class="data">
@@ -22,143 +22,146 @@
                 <div class="row mb-4">
                     <div class="col-md-8">
                         <div class="row g-3">
-                            <div class="col-md-4">
-                                <label for="filterKelas" class="form-label">Filter Kelas</label>
-                                <select class="form-select" id="filterKelas">
-                                    <option value="">Semua Kelas</option>
-                                    @foreach($kelasList->where('tahunAjaran.aktif', true) as $kelas)
-                                        <option value="{{ $kelas->id_kelas }}" {{ $kelasId == $kelas->id_kelas ? 'selected' : '' }}>
-                                            {{ $kelas->nama_kelas }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="filterTahunAjaran" class="form-label">Tahun Ajaran</label>
-                                <select class="form-select" id="filterTahunAjaran">
-                                    @foreach($tahunAjaranList as $ta)
-                                        <option value="{{ $ta->id_tahun_ajaran }}" {{ $tahunAjaranId == $ta->id_tahun_ajaran ? 'selected' : '' }}>
-                                            {{ $ta->nama_tahun_ajaran }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
                         </div>
                     </div>
                     <div class="col-md-4 text-end">
-                        <div class="d-flex justify-content-end align-items-end h-100 gap-2">
-                            <button type="button" class="btn btn-success btn-lg" id="btnManageSchedule">
-                                <i class="bi bi-calendar-week me-2"></i> Kelola Jadwal
-                            </button>
-                        </div>
+          
                     </div>
                 </div>
 
-                <!-- Tampilan Grid Jadwal Mingguan -->
+                <!-- Tampilan Compact Jadwal Mingguan -->
                 @if($kelasId)
                     @php
                         $selectedKelas = $kelasList->firstWhere('id_kelas', $kelasId);
                         $jadwalKelas = $jadwalByHariKelas;
                     @endphp
                     
-                    <div class="schedule-grid-container">
-                        <div class="schedule-grid-header">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div class="d-flex align-items-center">
-                                    <a href="{{ route('jadwal-pelajaran.index') }}" class="btn btn-outline-light me-3">
-                                        <i class="bi bi-arrow-left me-1"></i> Kembali
-                                    </a>
-                                    <h5 class="mb-0">
-                                        <i class="bi bi-calendar-week me-2"></i>
-                                        Jadwal Mingguan - {{ $selectedKelas->nama_kelas }}
-                                    </h5>
+                    <!-- Compact Weekly Schedule View -->
+                    <div class="weekly-schedule-view">
+                        <!-- Header dengan tombol kembali yang lebih prominent -->
+                        <div class="weekly-header">
+                            <div class="header-left">
+                                <a href="{{ route('jadwal-pelajaran.index') }}" class="btn-back">
+                                    <i class="bi bi-arrow-left-circle-fill"></i>
+                                    <span>Kembali</span>
+                                </a>
+                            </div>
+                            <div class="header-center">
+                                <h4 class="schedule-title">
+                                    <i class="bi bi-calendar-week me-2"></i>
+                                    Jadwal Mingguan
+                                </h4>
+                                <div class="class-info">
+                                    <span class="class-badge">{{ $selectedKelas->nama_kelas }}</span>
+                                    <span class="academic-year">{{ $selectedKelas->tahunAjaran->nama_tahun_ajaran ?? 'Tidak ada tahun ajaran' }}</span>
                                 </div>
-                                <div class="schedule-legend">
-                                    <span class="legend-item">
-                                        <span class="legend-dot filled"></span> Terisi
-                                    </span>
-                                    <span class="legend-item">
-                                        <span class="legend-dot empty"></span> Kosong
-                                    </span>
-                                </div>
+                            </div>
+                            <div class="header-right">
+            
                             </div>
                         </div>
 
-                        <div class="schedule-grid-wrapper">
-                            <table class="schedule-grid-table">
-                                <thead>
-                                    <tr>
-                                        <th class="session-header">Sesi</th>
-                                        <th class="time-header">Waktu</th>
-                                        @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $day)
-                                            <th class="day-header">{{ $day }}</th>
-                                        @endforeach
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for($sesi = 1; $sesi <= 6; $sesi++)
-                                        @php
-                                            $sesiData = [
-                                                1 => ['start' => '07:45', 'end' => '08:30'],
-                                                2 => ['start' => '08:30', 'end' => '09:15'],
-                                                3 => ['start' => '09:15', 'end' => '10:00'],
-                                                4 => ['start' => '10:15', 'end' => '11:00'],
-                                                5 => ['start' => '11:00', 'end' => '11:45'],
-                                                6 => ['start' => '11:45', 'end' => '12:30']
-                                            ][$sesi];
-                                            $waktuMulai = $sesiData['start'] . ':00';
-                                        @endphp
+                        <!-- Compact Schedule Table -->
+                        <div class="compact-schedule-container">
+                            <div class="table-responsive">
+                                <table class="compact-schedule-table">
+                                    <thead>
                                         <tr>
-                                            <td class="session-cell">
-                                                <div class="session-number">{{ $sesi }}</div>
-                                            </td>
-                                            <td class="time-cell">
-                                                <div class="time-range">
-                                                    <span class="time-start">{{ $sesiData['start'] }}</span>
-                                                    <span class="time-separator">-</span>
-                                                    <span class="time-end">{{ $sesiData['end'] }}</span>
+                                            <th class="time-col">
+                                                <div class="header-content">
+                                                    <i class="bi bi-clock"></i>
+                                                    <span>Waktu</span>
                                                 </div>
-                                            </td>
-                                            @foreach(['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'] as $hari)
-                                                @php
-                                                    // Cari jadwal untuk hari dan sesi ini
-                                                    $jadwalSesi = null;
-                                                    if (isset($jadwalKelas[$hari][$kelasId])) {
-                                                        $jadwalSesi = $jadwalKelas[$hari][$kelasId]->first(function($jadwal) use ($waktuMulai) {
-                                                            return $jadwal->waktu_mulai == $waktuMulai;
-                                                        });
-                                                    }
-                                                @endphp
-                                                <td class="schedule-grid-cell {{ $jadwalSesi ? 'filled' : 'empty' }}">
-                                                    @if($jadwalSesi)
-                                                        <div class="schedule-item">
-                                                            <div class="subject-name">{{ $jadwalSesi->mataPelajaran->nama }}</div>
-                                                            <div class="teacher-name">{{ $jadwalSesi->guru->nama_lengkap }}</div>
-                                                            <div class="schedule-actions">
-                                                                <!-- <button type="button" class="btn btn-sm btn-outline-info" 
-                                                                        onclick="viewJadwal({{ $jadwalSesi->id_jadwal }})"
-                                                                        data-bs-toggle="tooltip" title="Lihat Detail">
-                                                                    <i class="bi bi-eye"></i>
-                                                                </button> -->
-                                                                <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                                        onclick="editJadwalQuick({{ $jadwalSesi->id_jadwal }})"
-                                                                        data-bs-toggle="tooltip" title="Edit Cepat">
-                                                                    <i class="bi bi-pencil"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    @else
-                                                        <div class="empty-slot">
-                                                            <i class="bi bi-plus-circle"></i>
-                                                            <span>Kosong</span>
-                                                        </div>
-                                                    @endif
-                                                </td>
+                                            </th>
+                                            @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $day)
+                                                <th class="day-col">
+                                                    <div class="header-content">
+                                                        <i class="bi bi-calendar-day"></i>
+                                                        <span>{{ $day }}</span>
+                                                    </div>
+                                                </th>
                                             @endforeach
                                         </tr>
-                                    @endfor
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @for($sesi = 1; $sesi <= 6; $sesi++)
+                                            @php
+                                                $sesiData = [
+                                                    1 => ['start' => '07:45', 'end' => '08:30'],
+                                                    2 => ['start' => '08:30', 'end' => '09:15'],
+                                                    3 => ['start' => '09:15', 'end' => '10:00'],
+                                                    4 => ['start' => '10:15', 'end' => '11:00'],
+                                                    5 => ['start' => '11:00', 'end' => '11:45'],
+                                                    6 => ['start' => '11:45', 'end' => '12:30']
+                                                ][$sesi];
+                                                $waktuMulai = $sesiData['start'] . ':00';
+                                            @endphp
+                                            <tr class="schedule-row">
+                                                <td class="time-cell">
+                                                    <div class="time-info">
+                                                        <div class="session-badge">{{ $sesi }}</div>
+                                                        <div class="time-range">
+                                                            <span>{{ $sesiData['start'] }}</span>
+                                                            <small>{{ $sesiData['end'] }}</small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                @foreach(['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'] as $hari)
+                                                    @php
+                                                        // Cari jadwal untuk hari dan sesi ini
+                                                        $jadwalSesi = null;
+                                                        if (isset($jadwalKelas[$hari][$kelasId])) {
+                                                            $jadwalSesi = $jadwalKelas[$hari][$kelasId]->first(function($jadwal) use ($waktuMulai) {
+                                                                return $jadwal->waktu_mulai == $waktuMulai;
+                                                            });
+                                                        }
+                                                    @endphp
+                                                    <td class="subject-cell {{ $jadwalSesi ? 'filled' : 'empty' }}">
+                                                        @if($jadwalSesi)
+                                                            <div class="subject-info" onclick="viewJadwal({{ $jadwalSesi->id_jadwal }})" style="cursor: pointer;" title="Klik untuk detail">
+                                                                <div class="subject-name">{{ $jadwalSesi->mataPelajaran->nama }}</div>
+                                                                <div class="teacher-name">{{ $jadwalSesi->guru->nama_lengkap }}</div>
+                                                            </div>
+                                                        @else
+                                                            <div class="empty-info">
+                                                                <span class="empty-text">-</span>
+                                                            </div>
+                                                        @endif
+                                                    </td>
+                                                @endforeach
+                                            </tr>
+                                        @endfor
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Summary -->
+                        <div class="schedule-summary">
+                            @php
+                                $totalJadwal = 0;
+                                foreach(['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'] as $hari) {
+                                    if (isset($jadwalByHariKelas[$hari][$kelasId])) {
+                                        $totalJadwal += $jadwalByHariKelas[$hari][$kelasId]->count();
+                                    }
+                                }
+                                $maxJadwal = 36; // 6 hari x 6 sesi
+                                $percentage = $maxJadwal > 0 ? round(($totalJadwal / $maxJadwal) * 100) : 0;
+                            @endphp
+                            <div class="summary-card">
+                                <div class="summary-item">
+                                    <div class="summary-number">{{ $totalJadwal }}</div>
+                                    <div class="summary-label">Total Jadwal</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-number">{{ $maxJadwal - $totalJadwal }}</div>
+                                    <div class="summary-label">Jadwal Kosong</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-number">{{ $percentage }}%</div>
+                                    <div class="summary-label">Terisi</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 @else
