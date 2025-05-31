@@ -515,7 +515,7 @@ class GuruController extends Controller
                     'kelas' => $item->kelas->nama_kelas ?? '-',
                     'id_kelas' => $item->kelas->id_kelas ?? '-',
                     'mata_pelajaran' => $item->mataPelajaran->nama ?? '-',
-                    'waktu' => $item->waktu_mulai->format('H:i') . ' - ' . $item->waktu_selesai->format('H:i'),
+                    'waktu' => \Carbon\Carbon::parse($item->waktu_mulai)->format('H:i') . ' - ' . \Carbon\Carbon::parse($item->waktu_selesai)->format('H:i'),
                     'status' => $status,
                     'color' => $this->getStatusColor($status),
                     'tahun_ajaran' => $item->kelas->tahunAjaran->nama_tahun_ajaran ?? '-', // tambahan ini
