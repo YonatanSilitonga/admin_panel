@@ -31,71 +31,71 @@ class JadwalPelajaranController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-        // Filter berdasarkan kelas, hari, dan tahun ajaran
-        $kelasId = $request->input('kelas');
-        $hari = $request->input('hari');
-        $tahunAjaranId = $request->input('tahun_ajaran');
+        public function index(Request $request)
+        {
+            // Filter berdasarkan kelas, hari, dan tahun ajaran
+            $kelasId = $request->input('kelas');
+            $hari = $request->input('hari');
+            $tahunAjaranId = $request->input('tahun_ajaran');
 
-        // Ambil data untuk filter dropdown
-        $kelasList = Kelas::with('tahunAjaran')->orderBy('tingkat')->orderBy('nama_kelas')->get();
-        $mataPelajaranList = MataPelajaran::orderBy('nama')->get();
-        $tahunAjaranList = TahunAjaran::orderBy('nama_tahun_ajaran', 'desc')->get();
-        $tahunAjaranAktif = TahunAjaran::where('aktif', true)->first();
+            // Ambil data untuk filter dropdown
+            $kelasList = Kelas::with('tahunAjaran')->orderBy('tingkat')->orderBy('nama_kelas')->get();
+            $mataPelajaranList = MataPelajaran::orderBy('nama')->get();
+            $tahunAjaranList = TahunAjaran::orderBy('nama_tahun_ajaran', 'desc')->get();
+            $tahunAjaranAktif = TahunAjaran::where('aktif', true)->first();
 
-        // Query jadwal dengan filter
-        $query = Jadwal::with(['kelas.tahunAjaran', 'mataPelajaran', 'guru', 'tahunAjaran']);
+            // Query jadwal dengan filter
+            $query = Jadwal::with(['kelas.tahunAjaran', 'mataPelajaran', 'guru', 'tahunAjaran']);
 
-        if ($kelasId) {
-            $query->where('id_kelas', $kelasId);
-        }
-
-        if ($hari) {
-            $query->where('hari', $hari);
-        }
-
-        if ($tahunAjaranId) {
-            $query->where('id_tahun_ajaran', $tahunAjaranId);
-        } else {
-            // Default to active academic year if no specific year is selected
-            if ($tahunAjaranAktif) {
-                $query->where('id_tahun_ajaran', $tahunAjaranAktif->id_tahun_ajaran);
-                $tahunAjaranId = $tahunAjaranAktif->id_tahun_ajaran;
+            if ($kelasId) {
+                $query->where('id_kelas', $kelasId);
             }
-        }
 
-        $query->where('status', 'aktif');
-
-        // Urutkan jadwal
-        $jadwalList = $query->orderBy('hari')
-            ->orderBy('waktu_mulai')
-            ->orderBy('id_kelas')
-            ->get();
-
-        // Kelompokkan jadwal berdasarkan hari dan kelas untuk tampilan grid
-        $jadwalByHariKelas = [];
-        foreach (self::HARI_LIST as $h) {
-            $jadwalByHariKelas[$h] = [];
-            foreach ($kelasList as $k) {
-                $jadwalByHariKelas[$h][$k->id_kelas] = $jadwalList->filter(function ($jadwal) use ($h, $k) {
-                    return $jadwal->hari === $h && $jadwal->id_kelas === $k->id_kelas;
-                })->sortBy('waktu_mulai')->values();
+            if ($hari) {
+                $query->where('hari', $hari);
             }
-        }
 
-        return view('admin.pages.jadwal_pelajaran.index', compact(
-            'jadwalList',
-            'jadwalByHariKelas',
-            'kelasList',
-            'mataPelajaranList',
-            'tahunAjaranList',
-            'tahunAjaranAktif',
-            'kelasId',
-            'hari',
-            'tahunAjaranId'
-        ));
-    }
+            if ($tahunAjaranId) {
+                $query->where('id_tahun_ajaran', $tahunAjaranId);
+            } else {
+                // Default to active academic year if no specific year is selected
+                if ($tahunAjaranAktif) {
+                    $query->where('id_tahun_ajaran', $tahunAjaranAktif->id_tahun_ajaran);
+                    $tahunAjaranId = $tahunAjaranAktif->id_tahun_ajaran;
+                }
+            }
+
+            $query->where('status', 'aktif');
+
+            // Urutkan jadwal
+            $jadwalList = $query->orderBy('hari')
+                ->orderBy('waktu_mulai')
+                ->orderBy('id_kelas')
+                ->get();
+
+            // Kelompokkan jadwal berdasarkan hari dan kelas untuk tampilan grid
+            $jadwalByHariKelas = [];
+            foreach (self::HARI_LIST as $h) {
+                $jadwalByHariKelas[$h] = [];
+                foreach ($kelasList as $k) {
+                    $jadwalByHariKelas[$h][$k->id_kelas] = $jadwalList->filter(function ($jadwal) use ($h, $k) {
+                        return $jadwal->hari === $h && $jadwal->id_kelas === $k->id_kelas;
+                    })->sortBy('waktu_mulai')->values();
+                }
+            }
+
+            return view('admin.pages.jadwal_pelajaran.index', compact(
+                'jadwalList',
+                'jadwalByHariKelas',
+                'kelasList',
+                'mataPelajaranList',
+                'tahunAjaranList',
+                'tahunAjaranAktif',
+                'kelasId',
+                'hari',
+                'tahunAjaranId'
+            ));
+        }
 
     /**
      * Store jadwal massal untuk satu kelas dengan support untuk edit existing.
