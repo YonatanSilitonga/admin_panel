@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             GuruMataPelajaranSeeder::class,
             KelasSeeder::class,
             SiswaSeeder::class,
-            JadwalSeeder::class,
+            // JadwalSeeder::class,
             // AbsensiSeeder::class,
             // RekapAbsensiSeeder::class,
             SuratIzinSeeder::class,
