@@ -348,7 +348,7 @@ class GuruSeeder extends Seeder
                 'nama_lengkap' => 'Rudi Sport',
                 'nip' => '201111052033011026',
                 'nomor_telepon' => '081234567917',
-                'bidang_studi' => 'PJOK',
+                'bidang_studi' => 'Pendidikan Jasmani, Olahraga dan Kesehatan',
                 'status' => 'aktif',
                 'dibuat_pada' => Carbon::now(),
                 'dibuat_oleh' => 'system',

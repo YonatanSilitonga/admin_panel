@@ -196,7 +196,7 @@ public function store(Request $request)
         'nama_lengkap'      => 'required|string|max:255',
         'nip'               => 'nullable|numeric|digits:18|unique:guru,nip',
         'nomor_telepon'     => 'nullable|numeric|digits_between:10,15',
-        'bidang_studi'      => 'required|string|max:255',
+        'bidang_studi'      => 'nullable|string|max:255',
         'username'          => 'required|string|min:6|max:255|unique:users,username',
         'password'          => [
             'required',
@@ -205,6 +205,8 @@ public function store(Request $request)
             'confirmed',
             'regex:/^(?=.*[A-Za-z])(?=.*\d).+$/'
         ],
+        'mata_pelajaran'    => 'nullable|array',
+        'mata_pelajaran.*'  => 'exists:mata_pelajaran,id_mata_pelajaran',
     ], [
         'nama_lengkap.required' => 'Nama lengkap harus diisi',
         'nip.numeric' => 'NIP harus berupa angka',
@@ -212,7 +214,6 @@ public function store(Request $request)
         'nip.unique' => 'NIP sudah digunakan',
         'nomor_telepon.numeric' => 'Nomor telepon harus berupa angka',
         'nomor_telepon.digits_between' => 'Nomor telepon harus terdiri dari 10-15 digit',
-        'bidang_studi.required' => 'Bidang studi harus dipilih',
         'username.required' => 'Username harus diisi',
         'username.min' => 'Username minimal 6 karakter',
         'username.unique' => 'Username sudah digunakan',
@@ -245,15 +246,9 @@ public function store(Request $request)
             'dibuat_oleh'   => Auth::user()->username ?? 'system',
         ]);
 
-        // Cari mata pelajaran berdasarkan nama bidang studi yang dipilih
-        $mataPelajaran = MataPelajaran::where('nama', $request->bidang_studi)->first();
-        
-        if ($mataPelajaran) {
-            // Masukkan ke tabel guru_mata_pelajaran
-            $guru->mataPelajaran()->attach($mataPelajaran->id_mata_pelajaran, [
-                'dibuat_pada' => now(),
-                'dibuat_oleh' => Auth::user()->username ?? 'system',
-            ]);
+        // Sync mata pelajaran if provided
+        if ($request->has('mata_pelajaran')) {
+            $guru->mataPelajaran()->sync($request->mata_pelajaran);
         }
 
         DB::commit();
@@ -272,7 +267,7 @@ public function update(Request $request, $id)
         'nama_lengkap'      => 'required|string|max:255',
         'nip'               => 'nullable|numeric|digits:18|unique:guru,nip,'.$id.',id_guru',
         'nomor_telepon'     => 'nullable|numeric|digits_between:10,15',
-        'bidang_studi'      => 'required|string|max:255',
+        'bidang_studi'      => 'nullable|string|max:255',
         'status'            => 'required|string|in:aktif,nonaktif',
     ], [
         'nama_lengkap.required' => 'Nama lengkap harus diisi',
@@ -281,46 +276,27 @@ public function update(Request $request, $id)
         'nip.unique' => 'NIP sudah digunakan',
         'nomor_telepon.numeric' => 'Nomor telepon harus berupa angka',
         'nomor_telepon.digits_between' => 'Nomor telepon harus terdiri dari 10-15 digit',
-        'bidang_studi.required' => 'Bidang studi harus dipilih',
         'status.required' => 'Status harus dipilih',
     ]);
 
-    DB::beginTransaction();
-    try {
-        // Ambil data guru
-        $guru = Guru::findOrFail($id);
+    // Ambil data guru
+    $guru = Guru::findOrFail($id);
 
-        // Update data guru
-        $guru->update([
-            'nama_lengkap'      => $request->nama_lengkap,
-            'nip'               => $request->nip,
-            'nomor_telepon'     => $request->nomor_telepon,
-            'bidang_studi'      => $request->bidang_studi,
-            'status'            => $request->status,
-            'diperbarui_pada'   => now(),
-            'diperbarui_oleh'   => Auth::user()->username ?? 'system',
-        ]);
+    // Update data guru
+    $guru->update([
+        'nama_lengkap'      => $request->nama_lengkap,
+        'nip'               => $request->nip,
+        'nomor_telepon' => $request->nomor_telepon,
+        'bidang_studi'      => $request->bidang_studi,
+        'status'            => $request->status,
+        'diperbarui_pada'   => now(),
+        'diperbarui_oleh'   => Auth::user()->username ?? 'system',
+    ]);
 
-        // Hapus relasi mata pelajaran yang lama
-        $guru->mataPelajaran()->detach();
+    // Sinkronisasi relasi guru <-> mata pelajaran (pivot table)
+    $guru->mataPelajaran()->sync($request->mata_pelajaran);
 
-        // Cari mata pelajaran berdasarkan nama bidang studi yang dipilih
-        $mataPelajaran = MataPelajaran::where('nama', $request->bidang_studi)->first();
-        
-        if ($mataPelajaran) {
-            // Masukkan ke tabel guru_mata_pelajaran
-            $guru->mataPelajaran()->attach($mataPelajaran->id_mata_pelajaran, [
-                'dibuat_pada' => now(),
-                'dibuat_oleh' => Auth::user()->username ?? 'system',
-            ]);
-        }
-
-        DB::commit();
-        return redirect()->route('guru.index')->with('success', 'Data guru berhasil diperbarui.');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return back()->withInput()->with('error', 'Gagal memperbarui data guru: ' . $e->getMessage());
-    }
+    return redirect()->route('guru.index')->with('success', 'Data guru berhasil diperbarui.');
 }
         
 
