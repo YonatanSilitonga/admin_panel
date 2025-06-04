@@ -36,11 +36,21 @@
                             <i class="bi bi-info-circle me-3 fs-4"></i>
                             <div>
                                 <h6 class="alert-heading mb-1">Tidak ada data jadwal</h6>
-                                <p class="mb-2">Belum ada jadwal pelajaran yang tersedia. Silakan buat kelas terlebih dahulu untuk dapat mengelola jadwal.</p>
-                                <a href="{{ route('kelas.create') }}" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-plus-circle me-1"></i>
-                                    Buat Kelas Baru
-                                </a>
+                                <p class="mb-2">Belum ada jadwal pelajaran yang tersedia. Silakan buat jadwal terlebih dahulu untuk dapat mengelola jadwal.</p>
+                                <p class="mb-2">Jika belum ada kelas, silakan buat kelas terlebih dahulu.</p>
+
+                              <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <a href="{{ route('kelas.create') }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-circle me-1"></i>
+        Buat Kelas Baru
+    </a>
+    
+    <button type="button" class="btn btn-success btn-sm" id="btnManageSchedule">
+        <i class="bi bi-calendar-week me-1"></i>
+        Kelola Jadwal
+    </button>
+</div>
+
                             </div>
                         </div>
                     </div>

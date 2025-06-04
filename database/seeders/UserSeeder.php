@@ -410,46 +410,6 @@ class UserSeeder extends Seeder
                 'diperbarui_pada' => Carbon::now(),
                 'diperbarui_oleh' => 'system'
             ],
-            // Guru untuk mata pelajaran tambahan
-            [
-                'id_user' => 40,
-                'username' => 'imam_agama',
-                'password' => Hash::make('password'),
-                'id_role' => 3,
-                'fcm_token' => null,
-                'remember_token' => null,
-                'last_login_at' => null,
-                'dibuat_pada' => Carbon::now(),
-                'dibuat_oleh' => 'system',
-                'diperbarui_pada' => Carbon::now(),
-                'diperbarui_oleh' => 'system'
-            ],
-            [
-                'id_user' => 41,
-                'username' => 'sri_bk',
-                'password' => Hash::make('password'),
-                'id_role' => 3,
-                'fcm_token' => null,
-                'remember_token' => null,
-                'last_login_at' => null,
-                'dibuat_pada' => Carbon::now(),
-                'dibuat_oleh' => 'system',
-                'diperbarui_pada' => Carbon::now(),
-                'diperbarui_oleh' => 'system'
-            ],
-            [
-                'id_user' => 42,
-                'username' => 'dedi_tik',
-                'password' => Hash::make('password'),
-                'id_role' => 3,
-                'fcm_token' => null,
-                'remember_token' => null,
-                'last_login_at' => null,
-                'dibuat_pada' => Carbon::now(),
-                'dibuat_oleh' => 'system',
-                'diperbarui_pada' => Carbon::now(),
-                'diperbarui_oleh' => 'system'
-            ],
         ];
 
         DB::table('users')->insert($users);
