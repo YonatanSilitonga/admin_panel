@@ -11,7 +11,7 @@ class Jadwal extends Model
 
     protected $table = 'jadwal';
     protected $primaryKey = 'id_jadwal';
-    
+
     const CREATED_AT = 'dibuat_pada';
     const UPDATED_AT = 'diperbarui_pada';
 
@@ -28,10 +28,11 @@ class Jadwal extends Model
         'diperbarui_oleh'
     ];
 
-    // Jangan cast waktu sebagai datetime, biarkan sebagai time string
     protected $casts = [
         'dibuat_pada' => 'datetime',
         'diperbarui_pada' => 'datetime',
+        'waktu_mulai' => 'datetime',  // Tambahkan ini
+        'waktu_selesai' => 'datetime', // Tambahkan ini
     ];
 
     // Accessor untuk format waktu yang konsisten
@@ -78,7 +79,7 @@ class Jadwal extends Model
     {
         return $this->belongsTo(Guru::class, 'id_guru', 'id_guru');
     }
-    
+
     public function tahunAjaran()
     {
         return $this->belongsTo(TahunAjaran::class, 'id_tahun_ajaran', 'id_tahun_ajaran');
@@ -95,11 +96,11 @@ class Jadwal extends Model
     public function scopeForKelas($query, $kelasId, $tahunAjaranId = null)
     {
         $query->where('id_kelas', $kelasId);
-        
+
         if ($tahunAjaranId) {
             $query->where('id_tahun_ajaran', $tahunAjaranId);
         }
-        
+
         return $query->where('status', 'aktif');
     }
 
@@ -117,11 +118,11 @@ class Jadwal extends Model
     public function scopeForWaktu($query, $waktuMulai, $waktuSelesai = null)
     {
         $query->where('waktu_mulai', $waktuMulai);
-        
+
         if ($waktuSelesai) {
             $query->where('waktu_selesai', $waktuSelesai);
         }
-        
+
         return $query;
     }
 
@@ -167,34 +168,34 @@ class Jadwal extends Model
     {
         $query = self::where('hari', $this->hari)
             ->where('id_tahun_ajaran', $this->id_tahun_ajaran)
-            ->where(function($query) {
+            ->where(function ($query) {
                 // Check for time overlaps
-                $query->where(function($q) {
+                $query->where(function ($q) {
                     $q->where('waktu_mulai', '>=', $this->waktu_mulai)
-                      ->where('waktu_mulai', '<', $this->waktu_selesai);
-                })->orWhere(function($q) {
+                        ->where('waktu_mulai', '<', $this->waktu_selesai);
+                })->orWhere(function ($q) {
                     $q->where('waktu_selesai', '>', $this->waktu_mulai)
-                      ->where('waktu_selesai', '<=', $this->waktu_selesai);
-                })->orWhere(function($q) {
+                        ->where('waktu_selesai', '<=', $this->waktu_selesai);
+                })->orWhere(function ($q) {
                     $q->where('waktu_mulai', '<=', $this->waktu_mulai)
-                      ->where('waktu_selesai', '>=', $this->waktu_selesai);
+                        ->where('waktu_selesai', '>=', $this->waktu_selesai);
                 });
             })
-            ->where(function($query) {
+            ->where(function ($query) {
                 // Either same class or same teacher
                 $query->where('id_kelas', $this->id_kelas)
-                      ->orWhere('id_guru', $this->id_guru);
+                    ->orWhere('id_guru', $this->id_guru);
             })
             ->where('status', 'aktif');
-            
+
         // If this is an existing jadwal (has an ID), exclude it from conflict check
         if (isset($this->id_jadwal)) {
             $query->where('id_jadwal', '!=', $this->id_jadwal);
         }
-        
+
         return $query->with(['kelas', 'mataPelajaran', 'guru'])->get();
     }
-    
+
     /**
      * Check if this schedule has conflicts
      */
@@ -217,7 +218,7 @@ class Jadwal extends Model
         $jadwalGrid = [];
         $sesiWaktu = [
             1 => '07:45:00',
-            2 => '08:30:00', 
+            2 => '08:30:00',
             3 => '09:15:00',
             4 => '10:15:00',
             5 => '11:00:00',
@@ -226,11 +227,11 @@ class Jadwal extends Model
 
         foreach (['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'] as $hari) {
             $jadwalGrid[$hari] = [];
-            
+
             for ($sesi = 1; $sesi <= 6; $sesi++) {
                 $waktuMulai = $sesiWaktu[$sesi];
-                
-                $jadwal = $jadwalList->first(function($item) use ($hari, $waktuMulai) {
+
+                $jadwal = $jadwalList->first(function ($item) use ($hari, $waktuMulai) {
                     return $item->hari === $hari && $item->waktu_mulai === $waktuMulai;
                 });
 

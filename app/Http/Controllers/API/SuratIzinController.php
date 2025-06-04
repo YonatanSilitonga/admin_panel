@@ -149,7 +149,7 @@ class SuratIzinController extends Controller
             'file_lampiran' => $fileName,
             'status' => 'menunggu',
             'dibuat_oleh' => $request->id_user,
-            'diperbarui_oleh' => $request->id_user,
+            // 'diperbarui_oleh' => $request->id_user,
         ]);
 
         return response()->json([
