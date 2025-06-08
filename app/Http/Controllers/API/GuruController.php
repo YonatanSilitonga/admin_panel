@@ -774,8 +774,10 @@ class GuruController extends Controller
                 $kelas = $jadwal->kelas;
 
                 // Format waktu
-                $jamMulai = $jadwal->waktu_mulai->format('H:i');
-                $jamSelesai = $jadwal->waktu_selesai->format('H:i');
+                $jamMulai = \Carbon\Carbon::parse($jadwal->waktu_mulai)->format('H:i');
+                $jamSelesai = \Carbon\Carbon::parse($jadwal->waktu_selesai)->format('H:i');
+                $tanggal = \Carbon\Carbon::parse($absen->tanggal)->format('Y-m-d');
+                
 
                 return [
                     'id_kehadiran' => (string) $absen->id_absensi,
